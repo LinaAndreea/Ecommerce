@@ -1,13 +1,22 @@
-class HomePage {
-    constructor(page) {
-        this.page = page;
-        // target the navbar "Home" link using the full selector
-        this.navHomeLink = page.locator('#widget-navbar-217834 > ul > li:nth-child(1) > a > div > span');
+const { BasePage } = require('./pages/BasePage');
+
+/**
+ * Home Page - Single Responsibility: Handle home page specific interactions
+ * Follows LSP by properly extending BasePage
+ */
+class HomePage extends BasePage {
+    constructor(page, configService) {
+        super(page, configService);
+        // Use configuration-based selector
+        this.navHomeLink = this.getLocator('navbar.home');
     }
 
     async navigate() {
-        await this.page.goto('https://ecommerce-playground.lambdatest.io/');
-        await this.page.waitForLoadState('domcontentloaded');
+        await super.navigate('/');
+    }
+
+    async getHomeNavText() {
+        return await this.navHomeLink.textContent();
     }
 }
 

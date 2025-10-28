@@ -1,0 +1,513 @@
+================================================================================
+                        E-COMMERCE TEST CASES DOCUMENTATION
+================================================================================
+Project: E-commerce Playwright Test Suite
+Date: October 24, 2025
+Test Framework: Playwright
+Architecture: SOLID Principles Implementation
+
+================================================================================
+                               API REGISTRATION TESTS
+================================================================================
+
+TEST CASE ID: API_REG_001
+Test Name: Register New User via API Successfully
+Test File: tests/apiRegister.spec.js
+Test Method: should register new user via API successfully
+
+Description:
+    Verify that a new user can be successfully registered through the API
+    endpoint and user credentials are properly saved to file system.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API endpoint is available
+    - Test data directory exists and is writable
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Generate unique user data with current timestamp
+    3. Send POST request to registration endpoint with user data
+    4. Verify API response indicates success
+    5. Verify response body contains success message
+    6. Save user credentials to test-user.json file
+    7. Verify saved data matches input data
+
+Test Data:
+    - Firstname: "Auto"
+    - Lastname: "Tester"
+    - Email: "test+{timestamp}@mail.com" (dynamic)
+    - Telephone: "1234567890"
+    - Password: "Password123!"
+
+Expected Results:
+    - API response status: 200 (OK)
+    - Response body contains: "your account has been created"
+    - User credentials saved successfully to JSON file
+    - Console log displays: "✅ Registered user and saved credentials: {email}"
+
+Priority: High
+Test Type: API, Integration
+Dependencies: ConfigService, ApiService, DataPersistenceService, UserDataGenerator
+
+
+TEST CASE ID: API_REG_002
+Test Name: Register User with Custom Data
+Test File: tests/apiRegister.spec.js
+Test Method: should handle registration with custom user data
+
+Description:
+    Verify that user registration works correctly when custom user data
+    is provided, demonstrating the extensibility of the data generation system.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API endpoint is available
+    - UserDataGenerator supports custom overrides
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Generate user data with custom firstname and lastname
+    3. Send POST request to registration endpoint
+    4. Verify API response indicates success
+    5. Verify response body contains success message
+
+Test Data:
+    - Firstname: "Custom" (overridden)
+    - Lastname: "User" (overridden)
+    - Email: "test+{timestamp}@mail.com" (auto-generated)
+    - Telephone: "1234567890" (default)
+    - Password: "Password123!" (default)
+
+Expected Results:
+    - API response status: 200 (OK)
+    - Response body contains: "your account has been created"
+    - Custom data properly processed by API
+
+Priority: Medium
+Test Type: API, Unit
+Dependencies: UserDataGenerator, ApiService
+
+================================================================================
+                               API LOGIN TESTS
+================================================================================
+
+TEST CASE ID: API_LOGIN_001
+Test Name: Login with Registered User Credentials
+Test File: tests/apiLogin.spec.js
+Test Method: should login successfully with registered user credentials
+
+Description:
+    Verify that a user can successfully login using previously saved credentials
+    from the registration test, demonstrating end-to-end user flow integration.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API login endpoint is available
+    - User credentials exist in test-user.json (from registration test)
+    - DataPersistenceService can load stored credentials
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Load saved user credentials from test-user.json file
+    3. Skip test if no saved credentials exist
+    4. Send POST request to login endpoint with saved credentials
+    5. Verify API response indicates success
+    6. Verify response body contains success indicators
+
+Test Data:
+    - Email: Loaded from test-user.json file
+    - Password: Loaded from test-user.json file
+    - Expected success indicators: "my account", "dashboard", "welcome"
+
+Expected Results:
+    - API response status: 200 (OK)
+    - Response body contains success indicators
+    - No login failure messages in response
+    - Console log displays: "✅ Successfully logged in with saved credentials: {email}"
+
+Priority: High
+Test Type: API, Integration
+Dependencies: TestFactory, ApiService, DataPersistenceService, ConfigService
+
+
+TEST CASE ID: API_LOGIN_002
+Test Name: Handle Invalid Credentials Appropriately
+Test File: tests/apiLogin.spec.js
+Test Method: should handle invalid credentials without authentication
+
+Description:
+    Verify that the login system properly handles invalid credentials by
+    showing appropriate feedback (login form or error messages).
+
+Preconditions:
+    - E-commerce application is accessible
+    - API login endpoint is available
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Generate invalid credentials with non-existent email and wrong password
+    3. Send POST request to login endpoint with invalid credentials
+    4. Verify API response is received
+    5. Verify response shows login form or error indicators
+
+Test Data:
+    - Email: "nonexistent{timestamp}@invalid.com" (dynamic, non-existent)
+    - Password: "definitelywrongpassword123"
+    - Expected indicators: "login", "sign in", "password", "email", "error"
+
+Expected Results:
+    - API response status: ≥200 (valid HTTP response)
+    - Response body is defined and not empty
+    - Response contains login form elements or error messages
+    - Console log displays: "✅ Invalid credentials handled appropriately - login form or error shown"
+
+Priority: Medium
+Test Type: API, Security
+Dependencies: TestFactory, ApiService, ConfigService
+
+
+TEST CASE ID: API_LOGIN_003
+Test Name: Login with Newly Created User Credentials
+Test File: tests/apiLogin.spec.js
+Test Method: should login with newly created user credentials
+
+Description:
+    Verify the complete user registration and login flow by creating a new user
+    and immediately attempting to login with those credentials.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API registration and login endpoints are available
+    - UserDataGenerator can create unique user data
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Generate unique user data with current timestamp
+    3. Register new user via API
+    4. Verify registration was successful
+    5. Immediately attempt login with same credentials
+    6. Verify login response indicates success
+
+Test Data:
+    - User data: Generated by UserDataGenerator.generateUniqueUser()
+    - Email: "test+{timestamp}@mail.com"
+    - Password: "Password123!"
+
+Expected Results:
+    - Registration API response: 200 (OK) with success message
+    - Login API response: 200 (OK)
+    - Login response contains success indicators
+    - Console log displays: "✅ Successfully logged in with newly created user: {email}"
+
+Priority: High
+Test Type: API, Integration, End-to-End
+Dependencies: TestFactory, ApiService, UserDataGenerator, ConfigService
+
+
+TEST CASE ID: API_LOGIN_004
+Test Name: Handle Empty Credentials Gracefully
+Test File: tests/apiLogin.spec.js
+Test Method: should handle empty credentials gracefully
+
+Description:
+    Verify that the login system properly validates and handles empty
+    credentials with appropriate error messages or validation feedback.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API login endpoint is available
+    - Login endpoint has proper validation
+
+Test Steps:
+    1. Initialize test factory and dependencies
+    2. Prepare empty credentials (empty email and password)
+    3. Send POST request to login endpoint with empty credentials
+    4. Verify API response is received
+    5. Verify response shows validation errors or required field messages
+
+Test Data:
+    - Email: "" (empty string)
+    - Password: "" (empty string)
+    - Expected validation messages: "required", "empty", "missing", "error"
+
+Expected Results:
+    - API response status: ≥200 (valid HTTP response)
+    - Response body contains validation error indicators
+    - Proper error handling without system crash
+    - Console log displays: "✅ Empty credentials properly handled with validation error"
+
+Priority: Medium
+Test Type: API, Validation
+Dependencies: TestFactory, ApiService, ConfigService
+
+================================================================================
+                            HOME PAGE NAVIGATION TESTS
+================================================================================
+
+TEST CASE ID: HOME_NAV_001
+Test Name: Verify Home Navigation Link Text
+Test File: tests/homepage.spec.js
+Test Method: should display correct text in home navigation link
+
+Description:
+    Verify that the Home navigation link in the navbar displays the correct
+    text content.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Home page loads successfully
+    - Navigation bar is visible
+
+Test Steps:
+    1. Navigate to home page using HomePage factory
+    2. Wait for page to fully load
+    3. Locate home navigation link element
+    4. Verify text content matches expected value
+
+Test Data:
+    - Expected text: "Home"
+    - Selector: Configured via ConfigService
+
+Expected Results:
+    - Home navigation link is visible
+    - Text content exactly matches "Home"
+    - No console errors
+
+Priority: Medium
+Test Type: UI, Functional
+Dependencies: TestFactory, HomePage, BasePage, ConfigService
+
+
+TEST CASE ID: HOME_NAV_002
+Test Name: Verify Home Page Navigation
+Test File: tests/homepage.spec.js
+Test Method: should navigate to home page successfully
+
+Description:
+    Verify that navigation to the home page works correctly and the URL
+    contains the expected base URL.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Base URL is properly configured
+
+Test Steps:
+    1. Initialize HomePage through TestFactory
+    2. Execute navigate() method
+    3. Retrieve current page URL
+    4. Get expected base URL from configuration
+    5. Verify current URL contains base URL
+
+Test Data:
+    - Base URL: "https://ecommerce-playground.lambdatest.io" (configurable)
+    - Navigation path: "/" (root)
+
+Expected Results:
+    - Page navigates successfully
+    - Current URL contains configured base URL
+    - Page load state is 'domcontentloaded'
+    - No navigation errors
+
+Priority: High
+Test Type: UI, Navigation
+Dependencies: TestFactory, HomePage, BasePage, ConfigService
+
+================================================================================
+                          SHOP BY CATEGORY PAGE TESTS
+================================================================================
+
+TEST CASE ID: CATEGORY_001
+Test Name: Navigate to Category Page
+Test File: tests/shopByCategoryPage.spec.js
+Test Method: should navigate to category page successfully
+
+Description:
+    Verify that navigation to the shop by category page works correctly
+    and the URL contains the expected category path.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Category page exists and is accessible
+
+Test Steps:
+    1. Initialize ShopByCategoryPage through TestFactory
+    2. Execute navigateToCategoryPage() method
+    3. Retrieve current page URL
+    4. Verify URL contains expected category path
+
+Test Data:
+    - Category path: "/index.php?route=product/category&path=30"
+    - Expected URL fragment: "product/category&path=30"
+
+Expected Results:
+    - Page navigates to category page successfully
+    - Current URL contains "product/category&path=30"
+    - Page loads without errors
+
+Priority: High
+Test Type: UI, Navigation
+Dependencies: TestFactory, ShopByCategoryPage, BasePage
+
+
+TEST CASE ID: CATEGORY_002
+Test Name: Verify Category Section Visibility
+Test File: tests/shopByCategoryPage.spec.js
+Test Method: should display category section after clicking shop by category button
+
+Description:
+    Verify that clicking the "Shop by Category" button displays the category
+    section and makes it visible to the user.
+
+Preconditions:
+    - Category page is loaded
+    - "Shop by Category" button is present and clickable
+    - Category section exists on the page
+
+Test Steps:
+    1. Navigate to category page
+    2. Locate "Shop by Category" button
+    3. Click the button
+    4. Wait for category section to become visible
+    5. Verify category section visibility
+
+Test Data:
+    - Button selector: "text=Shop by Category" (configurable)
+    - Section selector: "#mz-component-1626147655" (configurable)
+
+Expected Results:
+    - "Shop by Category" button is clickable
+    - Click action executes successfully
+    - Category section becomes visible after click
+    - isCategorySectionVisible() returns true
+
+Priority: High
+Test Type: UI, Interaction
+Dependencies: TestFactory, ShopByCategoryPage, BasePage, ConfigService
+
+
+TEST CASE ID: CATEGORY_003
+Test Name: Validate Category Components Display with Proper Names
+Test File: tests/shopByCategoryPage.spec.js
+Test Method: should display category components with proper names after clicking shop by category
+
+Description:
+    Verify that clicking "Shop by Category" displays a list of category components
+    with meaningful and properly formatted names, validating the UI content structure.
+
+Preconditions:
+    - Category page is loaded
+    - "Shop by Category" button is present and clickable
+    - Category section contains valid category components
+    - ConfigService has proper selectors for category items and names
+
+Test Steps:
+    1. Navigate to category page
+    2. Click "Shop by Category" button
+    3. Wait for category section to be displayed
+    4. Retrieve all category components from the section
+    5. Extract category names from each component
+    6. Validate component count is greater than 0
+    7. Validate category names are meaningful and not empty
+    8. Verify each name has proper length and content
+
+Test Data:
+    - Category selectors: Configured via ConfigService
+    - Expected component types: ".category-item, .product-category, [class*='category']"
+    - Expected name selectors: ".category-name, .category-title, h3, h4, .name"
+    - Minimum name length: >2 characters
+
+Expected Results:
+    - Category components are displayed after button click
+    - Component count > 0
+    - Category names array is populated
+    - Each category name is meaningful (length > 2, not whitespace)
+    - Names include categories like: "Desktops", "Laptops", "Components", etc.
+    - Console logs show component count and category names
+    - Console displays: "✅ Category components displayed with names: [array]"
+    - Console displays: "✅ Found X components with Y valid names"
+
+Priority: High
+Test Type: UI, Validation, Content Verification
+Dependencies: TestFactory, ShopByCategoryPage, BasePage, ConfigService
+
+================================================================================
+                                TEST EXECUTION SUMMARY
+================================================================================
+
+Total Test Cases: 11
+- API Tests: 6 (2 Registration + 4 Login)
+- UI Navigation Tests: 2
+- UI Interaction Tests: 2
+- UI Validation Tests: 1
+
+Priority Distribution:
+- High Priority: 8 tests
+- Medium Priority: 3 tests
+
+Test Types:
+- API/Integration: 6 tests
+- UI/Functional: 5 tests
+
+SOLID Principles Implementation:
+✅ Single Responsibility Principle (SRP)
+✅ Open/Closed Principle (OCP)
+✅ Liskov Substitution Principle (LSP)
+✅ Interface Segregation Principle (ISP)
+✅ Dependency Inversion Principle (DIP)
+
+Architecture Benefits:
+- Configuration-driven test data
+- Dependency injection for better testability
+- Extensible page object model
+- Centralized service management
+- Clean separation of concerns
+
+Test Execution Commands:
+    npx playwright test                    # Run all tests
+    npx playwright test tests/api*.spec.js # Run only API tests
+    npx playwright test tests/homepage*    # Run only homepage tests
+    npx playwright test tests/shop*        # Run only shop category tests
+
+Expected Overall Results:
+    11 passed tests in approximately 15 seconds
+    All tests should pass without errors
+    Console output should show:
+    - Successful registrations for API registration tests
+    - Successful logins for API login tests
+    - UI interaction confirmations for page tests
+    - Category component validation with names and counts
+
+================================================================================
+                                    NOTES
+================================================================================
+
+1. Configuration Management:
+   - All URLs, selectors, and test data are managed through ConfigService
+   - Environment-specific configurations can be added easily
+
+2. Data Management:
+   - User registration creates test-user.json file
+   - Login tests can use saved credentials from registration
+   - Timestamps ensure unique test data for each run
+   - DataPersistenceService manages credential storage and retrieval
+
+3. Error Handling:
+   - Tests include proper wait conditions
+   - Page load states are verified before interactions
+
+4. Maintenance:
+   - SOLID principles ensure easy maintenance and extension
+   - New tests can leverage existing services and factories
+
+5. Future Enhancements:
+   - Additional page objects can extend BasePage
+   - New test scenarios can reuse existing services
+   - Configuration can be extended for multiple environments
+   - Additional API endpoints can be added to ConfigService and ApiService
+   - Session management and authentication state can be extended
+   - Cross-test data sharing can be expanded through DataPersistenceService
+
+================================================================================
+                                END OF DOCUMENT
+================================================================================
