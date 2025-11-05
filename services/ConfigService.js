@@ -6,7 +6,7 @@ class ConfigService {
     constructor() {
         this.config = {
             baseURL: process.env.BASE_URL || 'https://ecommerce-playground.lambdatest.io',
-            testDataPath: process.env.TEST_DATA_PATH || __dirname + '/../test-user.json',
+            testDataPath: process.env.TEST_DATA_PATH || __dirname + '/../tests/test-user.json',
             selectors: {
                 navbar: {
                     home: '#widget-navbar-217834 > ul > li:nth-child(1) > a > div > span'

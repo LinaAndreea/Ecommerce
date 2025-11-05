@@ -1,5 +1,5 @@
 
-const { BasePage } = require('./pages/BasePage');
+const { BasePage } = require('./BasePage');
 
 /**
  * Shop By Category Page - Single Responsibility: Handle category page interactions
