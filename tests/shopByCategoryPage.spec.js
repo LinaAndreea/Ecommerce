@@ -1,6 +1,6 @@
 
 const { test, expect } = require('@playwright/test');
-const { TestFactory } = require('./factories/TestFactory');
+const { TestFactory } = require('../.github/factories/TestFactory');
 
 /**
  * Shop by Category Page Tests - Following SOLID principles:

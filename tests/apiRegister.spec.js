@@ -1,5 +1,5 @@
 const { test, expect, request } = require('@playwright/test');
-const { TestFactory } = require('./factories/TestFactory');
+const { TestFactory } = require('../.github/factories/TestFactory');
 const { UserDataGenerator } = require('../services/UserDataGenerator');
 
 /**

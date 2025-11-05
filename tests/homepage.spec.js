@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { TestFactory } = require('./factories/TestFactory');
+const { TestFactory } = require('../.github/factories/TestFactory');
 
 /**
  * Home Page Tests - Following SOLID principles:
