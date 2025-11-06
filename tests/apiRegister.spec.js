@@ -1,6 +1,6 @@
 const { test, expect, request } = require('@playwright/test');
-const { TestFactory } = require('./factories/TestFactory');
-const { UserDataGenerator } = require('./services/UserDataGenerator');
+const { TestFactory } = require('../.github/factories/TestFactory');
+const { UserDataGenerator } = require('../services/UserDataGenerator');
 
 /**
  * API Registration Tests - Following SOLID principles:

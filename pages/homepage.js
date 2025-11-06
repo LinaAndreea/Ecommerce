@@ -1,4 +1,4 @@
-const { BasePage } = require('./pages/BasePage');
+const { BasePage } = require('./BasePage');
 
 /**
  * Home Page - Single Responsibility: Handle home page specific interactions

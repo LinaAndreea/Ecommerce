@@ -2,20 +2,45 @@
 
 This test suite has been refactored to follow SOLID principles for better maintainability, extensibility, and testability.
 
+## Project Structure
+
+```
+📁 Ecommerce/
+├── 📄 README.md                     # Project documentation
+├── 📄 TESTCASES.txt                 # Test cases documentation
+├── 📄 playwright.config.js          # Main Playwright configuration
+├── 📄 custom-reporter.js            # Custom test reporter
+├── 📄 package.json                  # Project dependencies
+├── 📁 services/                     # Shared utility services
+│   ├── ApiService.js
+│   ├── ConfigService.js
+│   ├── DataPersistenceService.js
+│   └── UserDataGenerator.js
+└── 📁 tests/                        # Test files and test-specific utilities
+    ├── 📁 factories/
+    │   └── TestFactory.js           # Test object factory
+    ├── 📁 pages/                    # Page Object Models
+    │   ├── BasePage.js
+    │   ├── homepage.js
+    │   └── shopByCategoryPage.js
+    ├── *.spec.js                    # Test specification files
+    └── test-user.json               # Test data
+```
+
 ## Architecture Overview
 
-### Services Layer (`services/`)
+### Services Layer (`/services/`)
 - **ConfigService**: Centralized configuration management
 - **ApiService**: API operations abstraction
 - **DataPersistenceService**: Data storage operations
 - **UserDataGenerator**: Test data generation strategies
 
-### Pages Layer (`pages/`)
+### Pages Layer (`/tests/pages/`)
 - **BasePage**: Common page functionality and abstractions
 - **HomePage**: Home page specific interactions
 - **ShopByCategoryPage**: Category page specific interactions
 
-### Factories Layer (`factories/`)
+### Factories Layer (`/tests/factories/`)
 - **TestFactory**: Dependency injection and object creation
 
 ## SOLID Principles Applied
@@ -65,7 +90,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
 
 ### Creating a New Page Object
 ```javascript
-const { BasePage } = require('./pages/BasePage');
+const { BasePage } = require('./BasePage');
 
 class NewPage extends BasePage {
     constructor(page, configService) {
@@ -73,10 +98,15 @@ class NewPage extends BasePage {
         this.specificElement = this.getLocator('new.element');
     }
 }
+
+module.exports = { NewPage };
 ```
 
 ### Adding New Test
 ```javascript
+const { test, expect } = require('@playwright/test');
+const { TestFactory } = require('./factories/TestFactory');
+
 test.beforeEach(async ({ page }) => {
     testFactory = new TestFactory();
     newPage = testFactory.createNewPage(page);
@@ -84,7 +114,25 @@ test.beforeEach(async ({ page }) => {
 ```
 
 ### Extending Configuration
-Add new selectors or URLs to `ConfigService` for new test scenarios.
+Add new selectors or URLs to `ConfigService` (located in `/services/ConfigService.js`) for new test scenarios.
+
+## Project Organization Benefits
+
+### Clear Separation of Concerns
+- **Root Level**: Configuration files (`playwright.config.js`), documentation (`README.md`, `TESTCASES.txt`), and shared services
+- **Services**: Utility classes that can be used across the entire project
+- **Tests Folder**: Contains only test-related files and Page Object Models
+
+### Improved Maintainability
+- **Configuration Files**: Centralized at project root for easy access
+- **Documentation**: Available at project root for immediate visibility
+- **Services**: Shared utilities accessible from anywhere in the project
+- **Page Objects**: Organized under `tests/pages/` for test-specific page interactions
+
+### Better Import Paths
+- Services imported as `require('../../services/ServiceName')`
+- Page Objects imported as `require('../pages/PageName')`
+- Clear distinction between shared utilities and test-specific components
 
 ## Migration Benefits
 

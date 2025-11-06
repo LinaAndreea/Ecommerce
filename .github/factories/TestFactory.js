@@ -1,8 +1,8 @@
-const { ConfigService } = require('../services/ConfigService');
-const { ApiService } = require('../services/ApiService');
-const { DataPersistenceService } = require('../services/DataPersistenceService');
-const { HomePage } = require('../homepage');
-const { ShopByCategoryPage } = require('../shopByCategoryPage');
+const { ConfigService } = require('../../services/ConfigService');
+const { ApiService } = require('../../services/ApiService');
+const { DataPersistenceService } = require('../../services/DataPersistenceService');
+const { HomePage } = require('../../pages/homepage');
+const { ShopByCategoryPage } = require('../../pages/shopByCategoryPage');
 
 /**
  * Test Factory - Single Responsibility: Create test dependencies
