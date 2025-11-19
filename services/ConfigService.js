@@ -24,7 +24,15 @@ class ConfigService {
                     register: '/index.php?route=account/register',
                     login: '/index.php?route=account/login'
                 }
-            }
+            },
+             carousel: {
+                container: '.swiper-container, .carousel, .slider, [class*="carousel"]',
+                slides: '.swiper-slide, .carousel-slide, .slide, [class*="slide"]',
+                container: '.swiper-container, .carousel, .slider, [class*="carousel"]',
+               // Added .carousel-item to match the markup on the site
+                slides: '.swiper-slide, .carousel-slide, .carousel-item, .slide, [class*="slide"]',
+                featuredProducts: '[data-id="218380"], .featured-products .carousel, .product-carousel'
+}
         };
     }
 

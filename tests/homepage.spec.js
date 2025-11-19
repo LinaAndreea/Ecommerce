@@ -32,4 +32,21 @@ test.describe('Home Page Navigation Tests', () => {
         
         expect(currentUrl).toContain(expectedBaseUrl);
     });
+
+   
+    test('should display featured product carousel with exactly three slides', async () => {
+        console.log('carouselSelector:', homePage.featuredCarouselSelector);
+        console.log('slidesSelector:', homePage.featuredCarouselSlidesSelector);
+
+        const isCarouselVisible = await homePage.isFeaturedCarouselVisible();
+        console.log('isCarouselVisible ->', isCarouselVisible);
+        expect(isCarouselVisible).toBe(true);
+
+        await homePage.waitForCarouselSlides();
+
+        const slideCount = await homePage.getFeaturedCarouselSlideCount();
+        console.log('slideCount ->', slideCount);
+        expect(slideCount).toBe(3);
 });
+
+    });
