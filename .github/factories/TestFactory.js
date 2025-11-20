@@ -3,6 +3,7 @@ const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
 const { HomePage } = require('../../pages/homepage');
 const { ShopByCategoryPage } = require('../../pages/shopByCategoryPage');
+const { SearchResultsPage } = require('../../pages/searchResultsPage');
 
 /**
  * Test Factory - Single Responsibility: Create test dependencies
@@ -25,6 +26,10 @@ class TestFactory {
 
     createShopByCategoryPage(page) {
         return new ShopByCategoryPage(page, this.configService);
+    }
+
+    createSearchResultsPage(page) {
+        return new SearchResultsPage(page, this.configService);
     }
 
     getConfigService() {
