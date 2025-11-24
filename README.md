@@ -39,6 +39,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **BasePage**: Common page functionality and abstractions
 - **HomePage**: Home page specific interactions
 - **ShopByCategoryPage**: Category page specific interactions
+- **SearchResultsPage**: Product search and results handling
 
 ### Factories Layer (`/tests/factories/`)
 - **TestFactory**: Dependency injection and object creation
@@ -105,13 +106,22 @@ module.exports = { NewPage };
 ### Adding New Test
 ```javascript
 const { test, expect } = require('@playwright/test');
-const { TestFactory } = require('./factories/TestFactory');
+const { TestFactory } = require('../.github/factories/TestFactory');
 
 test.beforeEach(async ({ page }) => {
     testFactory = new TestFactory();
     newPage = testFactory.createNewPage(page);
 });
 ```
+
+### Test Coverage
+
+The test suite includes:
+- **API Tests**: User registration and login functionality
+- **Navigation Tests**: Home page and category page navigation
+- **Search Tests**: Product search functionality and result validation
+- **Component Tests**: UI component verification (carousels, categories, etc.)
+- **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration
 Add new selectors or URLs to `ConfigService` (located in `/services/ConfigService.js`) for new test scenarios.

@@ -62,7 +62,7 @@ test.describe('Product Search Tests', () => {
 
     test('should find specific product - iPhone in search results', async () => {
         // Single responsibility: verify specific product search
-        const searchTerm = 'iphone';
+        const searchTerm = 'Palm Treo Pro';
         
         await searchResultsPage.searchForProduct(searchTerm);
         

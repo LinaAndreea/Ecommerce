@@ -47,6 +47,5 @@ test.describe('Home Page Navigation Tests', () => {
         const slideCount = await homePage.getFeaturedCarouselSlideCount();
         console.log('slideCount ->', slideCount);
         expect(slideCount).toBe(3);
-});
-
     });
+});         
