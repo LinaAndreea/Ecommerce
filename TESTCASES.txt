@@ -432,22 +432,226 @@ Test Type: UI, Validation, Content Verification
 Dependencies: TestFactory, ShopByCategoryPage, BasePage, ConfigService
 
 ================================================================================
+                          PRODUCT SEARCH TESTS
+================================================================================
+
+TEST CASE ID: SEARCH_001
+Test Name: Search for iPhone and Display Results with Matching Products
+Test File: tests/search.spec.js
+Test Method: should search for iPhone and display results with matching products
+
+Description:
+    Verify that searching for a product (iPhone) returns relevant results and 
+    displays products matching the search term.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Search functionality is available
+    - Product catalog contains iPhone products
+
+Test Steps:
+    1. Initialize SearchResultsPage through TestFactory
+    2. Navigate to home page
+    3. Enter search term 'iphone' in search input
+    4. Click search button to perform search
+    5. Verify search results are displayed
+    6. Count total number of search results
+    7. Verify searched product appears in results
+    8. Get and log all matching products
+
+Test Data:
+    - Search term: "iphone" (case-insensitive)
+    - Expected results: Products containing "iphone" in title
+
+Expected Results:
+    - Search results page is displayed
+    - Results count > 0
+    - At least one product contains search term in title
+    - Matching products are logged to console
+    - Console displays: "Found X products matching 'iphone': [array]"
+
+Priority: High
+Test Type: UI, Search, Functional
+Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
+
+
+TEST CASE ID: SEARCH_002
+Test Name: Display All Product Titles in Search Results
+Test File: tests/search.spec.js
+Test Method: should display all product titles in search results
+
+Description:
+    Verify that all product titles are properly displayed in search results
+    and each title is a valid non-empty string.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Search functionality is available
+    - Product catalog contains phone products
+
+Test Steps:
+    1. Initialize SearchResultsPage through TestFactory
+    2. Navigate to home page
+    3. Search for "phone" product
+    4. Retrieve all product titles from search results
+    5. Verify count of titles > 0
+    6. Verify each title is non-empty and is a string
+    7. Log total number of products found
+
+Test Data:
+    - Search term: "phone"
+    - Expected: Array of product title strings
+
+Expected Results:
+    - All product titles are retrieved successfully
+    - Each title is a non-empty string
+    - Title count > 0
+    - All titles are valid string types
+    - Console displays: "Search for 'phone' returned X products"
+
+Priority: Medium
+Test Type: UI, Search, Data Validation
+Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
+
+
+TEST CASE ID: SEARCH_003
+Test Name: Find Specific Product in Search Results
+Test File: tests/search.spec.js
+Test Method: should find specific product - iPhone in search results
+
+Description:
+    Verify that searching for a specific product name (Palm Treo Pro) returns
+    matching results and all results contain the search term.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Product "Palm Treo Pro" exists in catalog
+    - Search functionality is available
+
+Test Steps:
+    1. Initialize SearchResultsPage through TestFactory
+    2. Navigate to home page
+    3. Search for "Palm Treo Pro"
+    4. Get all matching products from results
+    5. Verify at least one matching product found
+    6. Verify all matching products contain search term (case-insensitive)
+
+Test Data:
+    - Search term: "Palm Treo Pro"
+    - Expected: Products with "Palm Treo Pro" in title
+
+Expected Results:
+    - Matching products count > 0
+    - All matching product titles contain "palm treo pro" (case-insensitive)
+    - Search accurately filters relevant products
+
+Priority: High
+Test Type: UI, Search, Specific Product Verification
+Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
+
+
+TEST CASE ID: SEARCH_004
+Test Name: Handle Search with No Results Gracefully
+Test File: tests/search.spec.js
+Test Method: should handle search with no results gracefully
+
+Description:
+    Verify that searching for a non-existent product displays appropriate
+    "no results" messaging or returns zero results without errors.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Search functionality is available
+    - Non-existent product term will return no results
+
+Test Steps:
+    1. Initialize SearchResultsPage through TestFactory
+    2. Navigate to home page
+    3. Search for "xyznonexistentproduct123"
+    4. Check if no results message is displayed
+    5. Get search results count
+    6. Verify either no results message is shown OR count is 0
+
+Test Data:
+    - Search term: "xyznonexistentproduct123" (non-existent)
+    - Expected: No results message or count = 0
+
+Expected Results:
+    - No results message is displayed OR results count = 0
+    - No system errors or crashes
+    - Graceful handling of empty result set
+    - User receives appropriate feedback
+
+Priority: Medium
+Test Type: UI, Search, Edge Case, Error Handling
+Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
+
+================================================================================
+                          HOME PAGE UI TESTS
+================================================================================
+
+TEST CASE ID: HOME_UI_001
+Test Name: Display Featured Product Carousel with Exactly Three Slides
+Test File: tests/homepage.spec.js
+Test Method: should display featured product carousel with exactly three slides
+
+Description:
+    Verify that the featured product carousel on the home page is visible
+    and contains exactly three slides as per design specifications.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Home page loads successfully
+    - Featured carousel component is configured
+    - Carousel has been populated with featured products
+
+Test Steps:
+    1. Initialize HomePage through TestFactory
+    2. Navigate to home page
+    3. Log carousel selector and slides selector for debugging
+    4. Verify featured carousel is visible on the page
+    5. Wait for carousel slides to load completely
+    6. Count the number of carousel slides
+    7. Verify slide count equals exactly 3
+    8. Log visibility status and slide count
+
+Test Data:
+    - Carousel selector: Configured via ConfigService
+    - Slides selector: Configured via ConfigService
+    - Expected slide count: 3
+
+Expected Results:
+    - Featured carousel is visible on home page
+    - Carousel contains exactly 3 slides
+    - All slides are properly loaded
+    - Console displays: "carouselSelector: [selector]"
+    - Console displays: "slidesSelector: [selector]"
+    - Console displays: "isCarouselVisible -> true"
+    - Console displays: "slideCount -> 3"
+
+Priority: Medium
+Test Type: UI, Component Verification, Visual Testing
+Dependencies: TestFactory, HomePage, BasePage, ConfigService
+
+================================================================================
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 11
+Total Test Cases: 16
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 2
 - UI Interaction Tests: 2
 - UI Validation Tests: 1
+- UI Search Tests: 4
+- UI Component Tests: 1
 
 Priority Distribution:
-- High Priority: 8 tests
-- Medium Priority: 3 tests
+- High Priority: 10 tests
+- Medium Priority: 6 tests
 
 Test Types:
 - API/Integration: 6 tests
-- UI/Functional: 5 tests
+- UI/Functional: 10 tests
 
 SOLID Principles Implementation:
 ✅ Single Responsibility Principle (SRP)
@@ -468,15 +672,18 @@ Test Execution Commands:
     npx playwright test tests/api*.spec.js # Run only API tests
     npx playwright test tests/homepage*    # Run only homepage tests
     npx playwright test tests/shop*        # Run only shop category tests
+    npx playwright test tests/search*      # Run only search tests
 
 Expected Overall Results:
-    11 passed tests in approximately 15 seconds
+    16 passed tests in approximately 20-25 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
     - Successful logins for API login tests
     - UI interaction confirmations for page tests
     - Category component validation with names and counts
+    - Search results with product matches and counts
+    - Carousel visibility and slide count verification
 
 ================================================================================
                                     NOTES

@@ -17,6 +17,14 @@ class ConfigService {
                     categoryItems: '.category-item, .product-category, [class*="category"]',
                     categoryNames: '.category-name, .category-title, h3, h4, .name',
                     categoryList: '.categories, .category-list, .product-categories'
+                },
+                search: {
+                    input: 'input[name="search"][data-autocomplete]',
+                    button: 'button:has-text("Search"), button[aria-label="Search"]',
+                    resultsContainer: '#content .row, .product-grid, .search-results',
+                    resultItems: '.product-thumb, .product-layout, .product-item',
+                    productTitles: '.product-thumb h4 a, .caption h4 a, .product-title',
+                    noResultsMessage: 'p:has-text("no product"), p:has-text("No products"), .no-results'
                 }
             },
             api: {
