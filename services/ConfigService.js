@@ -10,7 +10,7 @@ class ConfigService {
             selectors: {
                 navbar: {
                     home: '#widget-navbar-217834 > ul > li:nth-child(1) > a > div > span'
-                },
+                            },
                 category: {
                     shopButton: 'text=Shop by Category',
                     categorySection: '#mz-component-1626147655',

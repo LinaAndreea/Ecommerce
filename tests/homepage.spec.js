@@ -47,5 +47,34 @@ test.describe('Home Page Navigation Tests', () => {
         const slideCount = await homePage.getFeaturedCarouselSlideCount();
         console.log('slideCount ->', slideCount);
         expect(slideCount).toBe(3);
+});
+
+test('should display a confirmation message that review was added', async () => {
+        const currentUrl = await homePage.page.url();
+        const specialOffer = homePage.specialOffer;
+         expect(specialOffer).toBeVisible();
+         console.log( homePage.specialOffer);
+        await specialOffer.click();
+    
+
+        // Wait for navigation to complete
+        await homePage.page.waitForLoadState('networkidle');
+
+        // Verify we are on the correct product page
+        const newUrl = await homePage.page.url();
+        expect(newUrl).not.toBe(currentUrl);
+
+        const bannerContainer = homePage.bannerContainer;
+        await bannerContainer.waitFor({ state: 'visible', timeout: 5000 });
+        console.log('Navigated to product page via Special Hot link.'); 
+        await bannerContainer.click();
+        // Add a review
+        await homePage.addReview('Great Product', 'I really enjoyed using this product. Highly recommend!', 5);
+
+        // Verify confirmation message
+        const confirmationMessage = await homePage.getReviewConfirmationMessage();
+        expect(confirmationMessage).toContain('Thank you for your review.');    
     });
-});         
+
+
+    });
