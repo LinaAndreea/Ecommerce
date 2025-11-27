@@ -1,4 +1,4 @@
-const { BasePage } = require('./BasePage');
+const { BasePage } = require('./basePage');
 
 /**
  * Home Page - Handles all home page interactions

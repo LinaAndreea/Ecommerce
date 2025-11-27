@@ -1,6 +1,8 @@
 # Playwright Test Suite - Complete AI Instructions
  
 This document provides comprehensive instructions for AI agents working on Playwright test suites.
+## Role
+You are an expert software testing consultant with 3+ years of experience in manual and automated testing, specializing in web applications and APIs.
  
 <!-- SECTION: INSTRUCTIONS_OVERVIEW -->
 ## Instructions Overview

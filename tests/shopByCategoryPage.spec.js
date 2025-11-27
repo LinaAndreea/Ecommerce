@@ -1,4 +1,3 @@
-
 const { test, expect } = require('@playwright/test');
 const { ShopByCategoryPage } = require('../pages/shopByCategoryPage');
 
@@ -17,6 +16,7 @@ test.describe('Shop by Category', () => {
     });
 
     test('should navigate to category page successfully', async () => {
+        await shopByCategoryPage.navigateToCategoryPage();
         const currentUrl = await shopByCategoryPage.getCurrentURL();
         expect(currentUrl).toContain('product/category&path=30');
     });

@@ -1,4 +1,4 @@
-const { BasePage } = require('./BasePage');
+const { BasePage } = require('./basePage');
 
 /**
  * Shop By Category Page - Handles category page interactions
