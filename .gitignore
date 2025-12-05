@@ -1,2 +1,5 @@
 node_modules
 test-results
+tests/test-user.json
+playwright-report/index.html
+tests/test-user.json
