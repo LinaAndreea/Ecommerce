@@ -28,6 +28,9 @@ class HomePage extends BasePage {
         // Featured carousel - More resilient carousel selectors
         this.featuredCarousel = page.locator('[id*="carousel"], [class*="carousel"], .featured-carousel').first();
         this.carouselSlides = page.locator('[class*="carousel-item"], [class*="slide"], [class*="carousel"] [class*="item"]').filter({ visible: true });
+
+        // Wishlist button - Following selector priority
+        this.wishlistButton = page.locator('a[href*="wishlist"], button:has-text("Wishlist"), a[title*="Wishlist" i], [id*="wishlist"]').first();
     }
 
     /**
@@ -172,6 +175,28 @@ class HomePage extends BasePage {
         if (!message.includes(expectedMessage)) {
             throw new Error(`Expected message to contain "${expectedMessage}" but got "${message}"`);
         }
+        return this;
+    }
+
+    /**
+     * Clicks the wishlist button
+     * @returns {Promise<HomePage>}
+     */
+    async clickWishlistButton() {
+        try {
+            // Wait for button to be visible
+            await this.waitForElement(this.wishlistButton, 'visible', 5000);
+            
+            // Try normal click first
+            await this.wishlistButton.click({ timeout: 5000 });
+        } catch (error) {
+            // If intercepted, use force click
+            console.log('Normal click intercepted, using force click');
+            await this.wishlistButton.click({ force: true });
+        }
+        
+        // Wait for navigation to complete
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 });
         return this;
     }
 }
