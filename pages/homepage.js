@@ -182,18 +182,29 @@ class HomePage extends BasePage {
      * Clicks the wishlist button
      * @returns {Promise<HomePage>}
      */
- async clickWishlistButton() {
-    try {
-        await this.waitForElement(this.wishlistButton, 'visible', 5000);
-        await this.scrollIntoViewIfNeeded(this.wishlistButton); // Ensure button is in viewport
-        await this.wishlistButton.click({ timeout: 5000 });
-    } catch (error) {
-        console.log('Normal click intercepted, using force click');
-        await this.wishlistButton.click({ force: true });
+    async clickWishlistButton() {
+        try {
+            // Wait for button to be attached to DOM
+            await this.waitForElement(this.wishlistButton, 'visible', 5000);
+            
+            // Scroll element into view using Playwright's built-in method
+            await this.wishlistButton.scrollIntoViewIfNeeded();
+            
+            // Wait a moment for scroll to complete
+            await this.page.waitForTimeout(500);
+            
+            // Try normal click
+            await this.wishlistButton.click({ timeout: 5000 });
+        } catch (error) {
+            console.log('Normal click failed, using JavaScript click');
+            // Fallback to JavaScript click which bypasses viewport checks
+            await this.wishlistButton.evaluate(element => element.click());
+        }
+        
+        // Wait for navigation to complete
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        return this;
     }
-    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
-    return this;
-}
 }
 
 module.exports = { HomePage };

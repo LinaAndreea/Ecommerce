@@ -28,8 +28,9 @@ test.describe('wishList Access Control For Visitors:', () => {
     // When I click the WishList button
     await homePage.clickWishlistButton();
     
-    // Wait for navigation to complete
-    await page.waitForLoadState('domcontentloaded');
+    // Wait for navigation to complete and page to be stable
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(1000); // Additional wait for any dynamic content
     
     const currentUrl = page.url();
     console.log('Current URL after clicking wishlist:', currentUrl);
@@ -44,6 +45,7 @@ test.describe('wishList Access Control For Visitors:', () => {
       await expect(loginPage.passwordInput).toBeVisible();
     } else {
       // If not redirected, check that wishlist requires authentication message or empty state
+      await page.waitForLoadState('networkidle'); // Wait for all network requests
       const pageContent = await page.content();
       console.log('Page title:', await page.title());
       
@@ -59,8 +61,9 @@ test.describe('wishList Access Control For Visitors:', () => {
     // When I navigate to the WishList url directly
     await wishlistPage.navigate('/index.php?route=account/wishlist');
     
-    // Wait for page to load completely
-    await page.waitForLoadState('domcontentloaded');
+    // Wait for page to load completely and be stable
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(1000); // Additional wait for any dynamic content
     
     const currentUrl = page.url();
     console.log('Current URL after direct navigation:', currentUrl);
@@ -75,6 +78,7 @@ test.describe('wishList Access Control For Visitors:', () => {
       await expect(loginPage.passwordInput).toBeVisible();
     } else {
       // If not redirected, check that wishlist requires authentication message or empty state
+      await page.waitForLoadState('networkidle'); // Wait for all network requests
       const pageContent = await page.content();
       console.log('Page title:', await page.title());
       
