@@ -182,23 +182,18 @@ class HomePage extends BasePage {
      * Clicks the wishlist button
      * @returns {Promise<HomePage>}
      */
-    async clickWishlistButton() {
-        try {
-            // Wait for button to be visible
-            await this.waitForElement(this.wishlistButton, 'visible', 5000);
-            
-            // Try normal click first
-            await this.wishlistButton.click({ timeout: 5000 });
-        } catch (error) {
-            // If intercepted, use force click
-            console.log('Normal click intercepted, using force click');
-            await this.wishlistButton.click({ force: true });
-        }
-        
-        // Wait for navigation to complete
-        await this.page.waitForLoadState('networkidle', { timeout: 10000 });
-        return this;
+ async clickWishlistButton() {
+    try {
+        await this.waitForElement(this.wishlistButton, 'visible', 5000);
+        await this.scrollIntoViewIfNeeded(this.wishlistButton); // Ensure button is in viewport
+        await this.wishlistButton.click({ timeout: 5000 });
+    } catch (error) {
+        console.log('Normal click intercepted, using force click');
+        await this.wishlistButton.click({ force: true });
     }
+    await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+    return this;
+}
 }
 
 module.exports = { HomePage };
