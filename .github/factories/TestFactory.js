@@ -1,6 +1,9 @@
-const { HomePage } = require('../../pages/homepage');
-const { ShopByCategoryPage } = require('../../pages/shopByCategoryPage');
-const { SearchResultsPage } = require('../../pages/searchResultsPage');
+const { HomePage } = require('../../pages/HomePage');
+const { ShopByCategoryPage } = require('../../pages/ShopByCategoryPage');
+const { SearchResultsPage } = require('../../pages/SearchResultsPage');
+const { LoginPage } = require('../../pages/LoginPage');
+const { MyAccountPage } = require('../../pages/MyAccountPage');
+const { RegistrationPage } = require('../../pages/RegistrationPage');
 const { ConfigService } = require('../../services/ConfigService');
 const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
@@ -12,8 +15,9 @@ const { DataPersistenceService } = require('../../services/DataPersistenceServic
  */
 class TestFactory {
     constructor() {
-        this.baseUrl = process.env.BASE_URL || 'http://localhost';
         this.configService = new ConfigService();
+        // Use ConfigService baseURL for consistency across API and UI tests
+        this.baseUrl = this.configService.get('baseURL');
     }
 
     /**
@@ -41,6 +45,33 @@ class TestFactory {
      */
     createSearchResultsPage(page) {
         return new SearchResultsPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a LoginPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {LoginPage}
+     */
+    createLoginPage(page) {
+        return new LoginPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a MyAccountPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {MyAccountPage}
+     */
+    createMyAccountPage(page) {
+        return new MyAccountPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a RegistrationPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {RegistrationPage}
+     */
+    createRegistrationPage(page) {
+        return new RegistrationPage(page, this.baseUrl);
     }
 
     /**

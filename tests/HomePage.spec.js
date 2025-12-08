@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { HomePage } = require('../pages/homepage');
+const { HomePage } = require('../pages/HomePage');
 
 test.describe('Home Page Tests', () => {
     let homePage;
