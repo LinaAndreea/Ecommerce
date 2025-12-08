@@ -1,4 +1,4 @@
-const { BasePage } = require('./basePage');
+const { BasePage } = require('./BasePage');
 
 /**
  * Wishlist Page - Handles all wishlist page interactions
@@ -9,7 +9,7 @@ class WishlistPage extends BasePage {
         super(page, baseUrl);
 
         // Wishlist page elements - Following selector priority
-        this.wishlistHeading = page.locator('h1, h2').filter({ hasText: /wishlist|wish list/i }).first();
+        this.wishlistHeading = page.locator('h1, h2, h3').filter({ hasText: /wishlist|wish list/i }).first();
         this.wishlistTable = page.locator('table, [class*="wishlist"], [id*="wishlist"]').first();
         this.emptyWishlistMessage = page.locator('[class*="empty"], [class*="no-items"], p, div').filter({ hasText: /empty|no items|no products/i }).first();
         this.wishlistItems = page.locator('tr[class*="item"], [class*="wishlist-item"], tbody tr').filter({ hasText: /.+/ });

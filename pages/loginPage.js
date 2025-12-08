@@ -1,99 +1,97 @@
-const { BasePage } = require('./basePage');
+const { BasePage } = require('./BasePage');
 
 /**
  * Login Page - Handles all login page interactions
- * Encapsulates page elements and provides methods for user interactions
+ * Follows Single Responsibility Principle: Only manages login functionality
+ * @extends BasePage
  */
 class LoginPage extends BasePage {
     constructor(page, baseUrl) {
         super(page, baseUrl);
 
-        // Login form elements - Following selector priority: input types → CSS classes → text → role
-        this.emailInput = page.locator('input[type="email"], input[name*="email"], input[id*="email"]').first();
-        this.passwordInput = page.locator('input[type="password"], input[name*="password"], input[id*="password"]').first();
-        this.loginButton = page.locator('button[type="submit"], button:has-text("Login"), button:has-text("Sign In"), input[type="submit"]').first();
-        // More flexible heading locator to match various login page headings
-        this.loginHeading = page.locator('h1, h2, h3').filter({ hasText: /login|sign in|account|customer/i }).first();
-        this.errorMessage = page.locator('[role="alert"], .alert.alert-danger, [class*="error"], [class*="alert"]').first();
-        this.registerLink = page.locator('a[href*="register"], a:has-text("Register"), a:has-text("Sign Up")').first();
-        this.forgotPasswordLink = page.locator('a[href*="forgot"], a:has-text("Forgot")').first();
+        // Form input locators
+        this.emailInput = page.locator('input[name="email"]');
+        this.passwordInput = page.locator('input[name="password"]');
+
+        // Action button locators
+        this.loginButton = page.locator('input[type="submit"][value="Login"]');
+
+        // Navigation link locators
+        this.forgotPasswordLink = page.locator('a:has-text("Forgotten Password")');
+        this.continueToRegisterButton = page.locator('a.btn:has-text("Continue")');
+
+        // Alert and message locators
+        this.alertDanger = page.locator('.alert-danger');
+        this.alertSuccess = page.locator('.alert-success');
     }
 
     /**
      * Navigates to the login page
      * @returns {Promise<LoginPage>}
      */
-    async navigate() {
-        await super.navigate('/login');
+    async navigateToLogin() {
+        await this.navigate('/index.php?route=account/login');
+        await this.waitForElement(this.emailInput, 'visible', 10000);
         return this;
     }
 
     /**
      * Logs in with provided credentials
-     * @param {string} email - User email
+     * @param {string} email - User email address
      * @param {string} password - User password
      * @returns {Promise<LoginPage>}
      */
     async login(email, password) {
-        await this.waitForElement(this.emailInput, 'visible', 5000);
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);
         await this.loginButton.click();
+        await this.page.waitForLoadState('networkidle');
         return this;
     }
 
     /**
-     * Verifies login heading is visible
+     * Verifies successful login by checking URL redirect
      * @returns {Promise<boolean>}
      */
-    async isLoginHeadingVisible() {
-        try {
-            await this.waitForElement(this.loginHeading, 'visible', 5000);
-            return await this.isVisible(this.loginHeading);
-        } catch (error) {
-            return false;
-        }
+    async isLoginSuccessful() {
+        const currentUrl = this.page.url();
+        return currentUrl.includes('account/account') || 
+               currentUrl.includes('route=account/account');
     }
 
     /**
-     * Gets error message text
+     * Gets the error message displayed after failed login
      * @returns {Promise<string>}
      */
     async getErrorMessage() {
-        await this.waitForElement(this.errorMessage, 'visible', 5000);
-        return await this.getText(this.errorMessage);
+        try {
+            await this.waitForElement(this.alertDanger, 'visible', 5000);
+            return await this.getText(this.alertDanger);
+        } catch (error) {
+            return '';
+        }
     }
 
     /**
      * Verifies error message is displayed
-     * @param {string} expectedMessage - Expected error text
-     * @returns {Promise<LoginPage>}
+     * @param {string} expectedMessage - Expected error text (partial match)
+     * @returns {Promise<boolean>}
      */
     async verifyErrorMessage(expectedMessage) {
-        const message = await this.getErrorMessage();
-        if (!message.includes(expectedMessage)) {
-            throw new Error(`Expected error message to contain "${expectedMessage}" but got "${message}"`);
-        }
-        return this;
+        const errorText = await this.getErrorMessage();
+        return errorText.toLowerCase().includes(expectedMessage.toLowerCase());
     }
 
     /**
-     * Clicks on register link
+     * Clicks continue button to navigate to registration page
      * @returns {Promise<LoginPage>}
      */
-    async clickRegisterLink() {
-        await this.registerLink.click();
-        return this;
-    }
-
-    /**
-     * Clicks on forgot password link
-     * @returns {Promise<LoginPage>}
-     */
-    async clickForgotPasswordLink() {
-        await this.forgotPasswordLink.click();
+    async clickContinueToRegister() {
+        await this.continueToRegisterButton.click();
+        await this.page.waitForLoadState('networkidle');
         return this;
     }
 }
 
 module.exports = { LoginPage };
+

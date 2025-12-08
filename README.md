@@ -12,6 +12,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
 ├── 📄 custom-reporter.js            # Custom test reporter
 ├── 📄 package.json                  # Project dependencies
 ├── 📁 .github/
+│   ├── 📄 playwright-framework-instruction.md  # Framework guidelines
 │   └── 📁 factories/
 │       └── TestFactory.js           # Test object factory
 ├── 📁 services/                     # Shared utility services

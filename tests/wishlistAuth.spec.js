@@ -1,10 +1,10 @@
 const { test, expect } = require('@playwright/test');
-const { LoginPage } = require('../pages/loginPage');
-const { WishlistPage } = require('../pages/wishlistPage');
-const { HomePage } = require('../pages/homepage');
+const { LoginPage } = require('../pages/LoginPage');
+const { WishlistPage } = require('../pages/WishlistPage');
+const { HomePage } = require('../pages/HomePage');
 const { TestFactory } = require('../.github/factories/TestFactory');
 
-test.describe('wishList Access Control For Visitors:', () => {
+test.describe('WishList Access Control For Visitors:', () => {
 
   let loginPage;
   let wishlistPage;
@@ -14,7 +14,7 @@ test.describe('wishList Access Control For Visitors:', () => {
   test.beforeEach(async ({ page }) => {
     const testFactory = new TestFactory();
     configService = testFactory.getConfigService();
-    const baseUrl = configService.get('baseURL'); 
+    const baseUrl = configService.get('baseURL');
     
     loginPage = new LoginPage(page, baseUrl);
     wishlistPage = new WishlistPage(page, baseUrl);
@@ -30,7 +30,7 @@ test.describe('wishList Access Control For Visitors:', () => {
     
     // Wait for navigation to complete and page to be stable
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000); // Additional wait for any dynamic content
+    await page.waitForTimeout(1000);
     
     const currentUrl = page.url();
     console.log('Current URL after clicking wishlist:', currentUrl);
@@ -45,7 +45,7 @@ test.describe('wishList Access Control For Visitors:', () => {
       await expect(loginPage.passwordInput).toBeVisible();
     } else {
       // If not redirected, check that wishlist requires authentication message or empty state
-      await page.waitForLoadState('networkidle'); // Wait for all network requests
+      await page.waitForLoadState('networkidle');
       const pageContent = await page.content();
       console.log('Page title:', await page.title());
       
@@ -63,7 +63,7 @@ test.describe('wishList Access Control For Visitors:', () => {
     
     // Wait for page to load completely and be stable
     await page.waitForLoadState('load');
-    await page.waitForTimeout(1000); // Additional wait for any dynamic content
+    await page.waitForTimeout(1000);
     
     const currentUrl = page.url();
     console.log('Current URL after direct navigation:', currentUrl);
@@ -78,7 +78,7 @@ test.describe('wishList Access Control For Visitors:', () => {
       await expect(loginPage.passwordInput).toBeVisible();
     } else {
       // If not redirected, check that wishlist requires authentication message or empty state
-      await page.waitForLoadState('networkidle'); // Wait for all network requests
+      await page.waitForLoadState('networkidle');
       const pageContent = await page.content();
       console.log('Page title:', await page.title());
       
