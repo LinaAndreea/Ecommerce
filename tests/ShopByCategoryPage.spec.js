@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { ShopByCategoryPage } = require('../pages/shopByCategoryPage');
+const { ShopByCategoryPage } = require('../pages/ShopByCategoryPage');
 
 /**
  * Shop by Category Page Tests

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { MainMenuPage } = require('../pages/mainMenuPage');
+const { MainMenuPage } = require('../pages/MainMenuPage');
 
 test.describe('Main Menu - Hover Behavior', () => {
   let mainMenuInstance;

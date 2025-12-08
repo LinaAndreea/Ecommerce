@@ -1,4 +1,4 @@
-const { BasePage } = require('./basePage');
+const { BasePage } = require('./BasePage');
 
 class MainMenuPage extends BasePage {
   constructor(page, baseUrl) {

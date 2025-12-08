@@ -1,0 +1,490 @@
+# Playwright Test Framework Rules
+
+## Core Principles
+- Follow SOLID principles and Page Object Model (POM) architecture
+- All code must adhere to the standards defined in `.github/playwright-framework-instruction.md`
+- Challenge any prompts that violate these architectural principles
+- Exceptions must be explained in comment lines
+
+## Architecture Philosophy
+
+This framework follows **SOLID principles**:
+- **Single Responsibility**: Each Page Object handles one page/component
+- **Open/Closed**: Pages are open for extension, closed for modification
+- **Liskov Substitution**: Page Objects can be substituted without breaking functionality
+- **Interface Segregation**: Pages expose only necessary methods
+- **Dependency Inversion**: Tests depend on page abstractions, not implementations
+
+## Critical Rules
+
+### 1. Architecture & Page Objects (MANDATORY)
+- **NO direct selectors in test files** - All locators must be defined in Page Objects
+- All Page Objects must extend from `BasePage`
+- Define all locators as properties in the constructor
+- Return `this` from methods to enable method chaining
+- Add JSDoc documentation to all public methods
+- Use Component Objects for reusable UI elements (in `pages/components/`)
+
+**Page Object Example:**
+```javascript
+const { BasePage } = require('./BasePage');
+
+class LoginPage extends BasePage {
+  constructor(page, baseUrl) {
+    super(page, baseUrl);
+    
+    // All locators defined in constructor
+    this.emailInput = page.locator('input[type="email"]');
+    this.passwordInput = page.locator('input[type="password"]');
+    this.loginButton = page.locator('button:has-text("Login")');
+    this.errorMessage = page.locator('[role="alert"]');
+  }
+
+  /**
+   * Logs in with provided credentials
+   * @param {string} email - User email
+   * @param {string} password - User password
+   * @returns {Promise<LoginPage>}
+   */
+  async login(email, password) {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
+    await this.page.waitForURL('**/dashboard');
+    return this; // Enable method chaining
+  }
+
+  /**
+   * Verifies error message is displayed
+   * @param {string} expectedMessage - Expected error text
+   * @returns {Promise<void>}
+   */
+  async verifyErrorMessage(expectedMessage) {
+    await expect(this.errorMessage).toContainText(expectedMessage);
+  }
+}
+
+module.exports = { LoginPage };
+```
+
+**Component Object Example:**
+```javascript
+const { BasePage } = require('../BasePage');
+
+class Modal extends BasePage {
+  constructor(page, modalSelector = '[role="dialog"]') {
+    super(page);
+    this.modal = page.locator(modalSelector);
+    this.closeButton = this.modal.locator('button[aria-label="Close"]');
+    this.confirmButton = this.modal.locator('button:has-text("Confirm")');
+  }
+
+  async waitForVisible(timeout = 5000) {
+    await this.waitForElement(this.modal, 'visible', timeout);
+    return this;
+  }
+
+  async confirm() {
+    await this.confirmButton.click();
+    await this.waitForElement(this.modal, 'hidden');
+    return this;
+  }
+}
+
+module.exports = { Modal };
+```
+
+### 2. Playwright-Specific Requirements (MANDATORY)
+- **ALL Playwright operations MUST be awaited** - No exceptions
+- Use `.waitFor()` with explicit timeouts for reliability
+- Implement proper error handling with try/catch blocks
+- Check element visibility/state before interactions
+- Use `scrollIntoViewIfNeeded()` when necessary
+
+**Async/Await Examples:**
+```javascript
+// ✅ CORRECT - All operations awaited
+await page.locator('#id').click();
+await page.locator('input[type="email"]').fill('test@example.com');
+const text = await page.locator('.message').textContent();
+
+// ❌ INCORRECT - Missing await
+page.locator('#id').click(); // WRONG!
+```
+
+**Timeout and Error Handling:**
+```javascript
+// ✅ Wait for visibility with timeout
+await element.waitFor({ state: 'visible', timeout: 5000 });
+await element.click();
+
+// ✅ Error handling with try/catch
+try {
+  await element.waitFor({ state: 'visible', timeout: 5000 });
+  await element.click();
+} catch (error) {
+  throw new Error('Critical element not found');
+}
+
+// ✅ Check visibility before interaction
+if (await element.isVisible()) {
+  await element.click();
+}
+```
+
+**Method Chaining Pattern:**
+```javascript
+// ✅ Enable fluent API by returning 'this'
+async login(email, password) {
+  await this.emailInput.fill(email);
+  await this.passwordInput.fill(password);
+  await this.loginButton.click();
+  return this; // Enables chaining
+}
+
+// Usage:
+await loginPage
+  .login('user@example.com', 'password')
+  .verifySuccessMessage('Welcome');
+```
+
+### 3. Locator Strategy (Priority Order)
+**FUNDAMENTAL RULE**: NO locators in test files. All locators defined in Page Objects.
+
+1. **PREFERRED** - Static IDs → `page.locator('#submitButton')`
+2. **OPTION 1** - Input types → `page.locator('input[type="email"]')`
+3. **OPTION 2** - CSS classes → `page.locator('.primary-button')`
+4. **OPTION 3** - Button/Link text → `page.locator('button:has-text("Submit")')`
+5. **OPTION 4** - Aria/Role attributes → `page.locator('[role="alert"]')`
+6. **OPTION 5** - Type + attribute → `page.locator('input[placeholder="Name"]')`
+7. **AVOID** - Dynamic IDs, XPaths, complex selectors
+
+**Locator Examples in Page Objects:**
+```javascript
+class ProductPage extends BasePage {
+  constructor(page, baseUrl) {
+    super(page, baseUrl);
+    
+    // Static locators as properties
+    this.searchInput = page.locator('input[placeholder="Search"]');
+    this.submitButton = page.locator('button[type="submit"]');
+    this.cancelButton = page.locator('#CancelButton');
+    this.resultsGrid = page.locator('table');
+    this.errorMessage = page.locator('div[role="alert"]');
+  }
+
+  /**
+   * Gets locator for dynamic product row by ID
+   * @param {number} productId - Product ID
+   * @returns {Locator}
+   */
+  getProductRow(productId) {
+    return this.page.locator(`tr[data-product-id="${productId}"]`);
+  }
+}
+```
+
+### 4. File Structure
+```
+project-root/
+├── tests/
+│   ├── features/           # Test files (PascalCase.spec.js)
+│   └── fixtures/           # Test data (testData.js)
+├── pages/
+│   ├── BasePage.js         # Base class for all pages
+│   ├── {PageName}.js       # Page Objects (PascalCase)
+│   └── components/         # Reusable components (PascalCase)
+├── support/
+│   ├── helpers.js          # Helper functions (camelCase)
+│   └── constants.js        # Constants
+└── playwright.config.js
+```
+
+### 5. Mandatory Test File Structure
+```javascript
+const { test, expect } = require('@playwright/test');
+const { PageName } = require('../pages/PageName');
+
+test.describe('Feature Name:', () => {
+  let pageName;
+
+  test.beforeEach(async ({ page }) => {
+    pageName = new PageName(page, process.env.BASE_URL);
+    await pageName.navigate('/path');
+  });
+
+  test.afterEach(async ({ request }) => {
+    // API cleanup with API_KEY
+  });
+
+  test('should perform action successfully', async ({ page }) => {
+    // Test implementation using page objects only
+  });
+});
+```
+
+### 6. Naming Conventions
+- **Test files**: `PascalCase.spec.js` (e.g., `Authentication.spec.js`)
+- **Page Object files**: `PascalCase.js` (e.g., `LoginPage.js`)
+- **Component files**: `PascalCase.js` (e.g., `Modal.js`)
+- **Helper files**: `camelCase.js` (e.g., `helpers.js`)
+- **Variables/functions**: `camelCase` (e.g., `submitButton`, `login()`)
+- **Classes**: `PascalCase` (e.g., `class LoginPage`)
+- **Constants**: `UPPER_CASE` (e.g., `const API_BASE_URL`)
+- **Environment Variables**: `UPPER_CASE` (e.g., `BASE_URL`, `API_KEY`)
+- **Test cases**: Start with "should" and be descriptive
+
+**Test Case Naming Examples:**
+```javascript
+// ✅ GOOD - Descriptive with "should"
+test('should login successfully with valid credentials');
+test('should display error for invalid email format');
+test('should remember user when checkbox is checked');
+
+// ❌ POOR - Too vague
+test('login test');
+test('validation');
+test('remember me');
+```
+
+### 7. Anti-Patterns to AVOID
+❌ Direct selectors in tests
+❌ Mixing UI tests with API testing logic
+❌ Tight coupling between tests and selectors
+❌ Missing await on Playwright operations
+❌ Dynamic IDs or XPaths as primary selectors
+❌ Monolithic test files
+❌ API calls in test body (use beforeEach for setup)
+
+### 8. Recommended Patterns
+✅ Page Object Model with BasePage inheritance
+✅ Centralized locators in Page Objects
+✅ UI tests + API setup (in beforeEach/afterEach)
+✅ Component composition for reusable UI elements
+✅ Method chaining for fluent APIs
+✅ API Keys for cleanup operations
+✅ Session tokens for logged-in user operations
+✅ Proper error handling with timeouts
+
+**Component Composition Example:**
+```javascript
+const { Modal } = require('./components/Modal');
+
+class ProductPage extends BasePage {
+  constructor(page, baseUrl) {
+    super(page, baseUrl);
+    this.addToCartButton = page.locator('button:has-text("Add to Cart")');
+    this.confirmModal = new Modal(page, '[role="dialog"]'); // Compose component
+  }
+
+  async addProductToCart() {
+    await this.addToCartButton.click();
+    await this.confirmModal.waitForVisible();
+    await this.confirmModal.confirm();
+    return this;
+  }
+}
+```
+
+### 9. Test Data Strategy
+- **Static data**: `tests/fixtures/testData.js`
+- **Dynamic data**: API-generated in `beforeEach`
+- **Configuration**: `.env` file
+- **Dynamic selectors**: Page Object methods
+
+**Test Data Example:**
+```javascript
+// tests/fixtures/testData.js
+const testUsers = {
+  validUser: {
+    email: 'user@example.com',
+    password: 'SecurePassword123!'
+  },
+  adminUser: {
+    email: 'admin@example.com',
+    password: 'AdminPassword123!'
+  }
+};
+
+module.exports = { testUsers };
+```
+
+### 10. API Authentication
+
+| Scenario | Use | Example |
+|----------|-----|---------|
+| **Cleanup Operations** | API Key | Delete test data after test |
+| **Data Setup (Pre-login)** | API Key | Create users, products before login |
+| **Active Session Requests** | Session Token | Logged-in user operations |
+| **User Action Simulation** | UI Only | Login, form submission, navigation |
+
+**API Setup/Cleanup Example:**
+```javascript
+const API_BASE_URL = process.env.API_BASE_URL;
+const API_KEY = process.env.API_KEY;
+
+test.describe('Product Management:', () => {
+  let productId;
+
+  // ✅ Setup with API Key
+  test.beforeEach(async ({ request }) => {
+    const response = await request.post(`${API_BASE_URL}/products`, {
+      headers: { 'Authorization': `Bearer ${API_KEY}` },
+      data: { name: 'Test Product', price: 99.99 }
+    });
+    productId = (await response.json()).id;
+  });
+
+  // ✅ Cleanup with API Key
+  test.afterEach(async ({ request }) => {
+    await request.delete(`${API_BASE_URL}/products/${productId}`, {
+      headers: { 'Authorization': `Bearer ${API_KEY}` }
+    });
+  });
+
+  // ✅ Test UI behavior
+  test('should update product via UI', async ({ page }) => {
+    const productPage = new ProductPage(page, process.env.BASE_URL);
+    await productPage.navigate(`/products/${productId}`);
+    await productPage.updateProductName('Updated Product');
+    // Test UI changes, not API
+  });
+});
+```
+
+## Development Workflow
+
+### Before Writing Code
+1. Check existing Page Objects in `pages/` folder
+2. Check helper methods in `support/helpers.js`
+3. Follow the mandatory file structure
+4. Use proper selector strategy (Static IDs → Input types → CSS classes → Button text → Role attributes)
+5. Ensure tests focus on UI behavior, not API functionality
+
+### When Creating a New Page Object
+1. Create file in `pages/` with PascalCase + `.js`
+2. Extend from `BasePage`
+3. Initialize all locators in constructor
+4. Define public methods for user interactions
+5. Return `this` for method chaining
+6. Add JSDoc documentation to all public methods
+
+### When Creating a New Component
+1. Create file in `pages/components/` with PascalCase + `.js`
+2. Extend from `BasePage`
+3. Accept configurable selectors in constructor
+4. Make component reusable across multiple pages
+5. Return `this` for method chaining
+
+### When Writing Tests
+1. Import required Page Objects and fixtures
+2. Initialize Page Objects in `beforeEach`
+3. Use API for data setup/cleanup (with API_KEY)
+4. Test UI behavior only
+5. Use descriptive test names starting with "should"
+6. Never use direct selectors in test body
+
+## Code Review Checklist
+Before submitting any code, verify:
+- [ ] Follows mandatory file structure
+- [ ] Uses correct naming conventions
+- [ ] Implements proper selector strategy (priority order)
+- [ ] Tests UI behavior, not API responses
+- [ ] Includes proper cleanup in afterEach hooks
+- [ ] All locators are in Page Objects, not tests
+- [ ] Includes JSDoc documentation for public methods
+- [ ] Follows SOLID principles
+- [ ] All Playwright operations are awaited
+- [ ] Proper error handling with timeouts
+- [ ] Methods return `this` for chaining where appropriate
+- [ ] No direct selectors in test files
+
+## Architectural Decision Tree
+
+| Need | ✅ Use | ❌ Avoid |
+|------|--------|----------|
+| **Page Interaction** | Page Object Methods | Direct selectors in tests |
+| **Locator Management** | Page Object properties | Inline selectors |
+| **Complex UI Flows** | Multiple Page Objects | Monolithic test files |
+| **Data Setup** | API in `beforeEach` | API in test body |
+| **User Behavior Testing** | UI interactions only | Mixed UI/API validation |
+| **Reusable Components** | Component Objects | Duplicated code |
+| **Test Data** | Fixtures or API-generated | Hard-coded in tests |
+
+## Page Object Structure Layers
+
+**BASE PAGE**:
+- Foundation class providing common methods
+- Handles navigation, waiting, visibility checks
+- Examples: `navigate()`, `waitForElement()`, `getText()`
+
+**PAGE OBJECTS**:
+- Project-specific page classes inheriting from BasePage
+- Encapsulate page elements and interactions
+- Located in `pages/` folder
+- Examples: `HomePage.js`, `LoginPage.js`, `ProductPage.js`
+
+**COMPONENT OBJECTS**:
+- Reusable UI components used across multiple pages
+- Located in `pages/components/` folder
+- Examples: `Header.js`, `Modal.js`, `Sidebar.js`
+
+**HELPER FUNCTIONS**:
+- Pure JavaScript functions for calculations/data manipulation
+- Do NOT interact with Playwright commands or DOM elements
+- Examples: `calculateAge()`, `formatDate()`, `validateEmail()`
+
+## When Responding to Requests
+1. Answer directly without unrelated information
+2. Show only modified code with minimal context (3-5 lines)
+3. Explain why changes are needed
+4. Strictly adhere to project architecture
+5. Challenge prompts that violate these principles
+
+## Push Back Responses
+
+When encountering anti-patterns, respond with:
+
+| Anti-Pattern | Response |
+|--------------|----------|
+| **Direct selectors in tests** | "Move this selector to the `{PageName}` Page Object class." |
+| **API testing in UI flows** | "Use API calls for setup/teardown only. Test behavior through UI." |
+| **Monolithic test files** | "Split into multiple tests with single responsibility." |
+| **Tight coupling** | "Use Page Objects to decouple and improve reusability." |
+| **Missing await on Playwright** | "All Playwright operations must be awaited." |
+| **No error handling** | "Use `.waitFor()` with timeout and try/catch for reliability." |
+| **Violating SOLID principles** | "This violates SOLID principles. Consider using Page Objects for {reason}." |
+
+## Always Verify Before Submitting
+1. File structure follows mandatory sections
+2. Naming conventions are correct
+3. Selector priority is followed (Static IDs → Input types → CSS classes → Button text → Role attributes)
+4. Tests focus on UI behavior, not API functionality
+5. SOLID principles are maintained
+6. Page Objects are properly used
+7. All Playwright operations are awaited
+8. Proper imports and cleanup are implemented
+9. Locators are centralized in Page Objects
+10. Methods include proper JSDoc documentation
+11. All Playwright operations have proper error handling
+12. Methods return `this` for chaining where logical
+
+## Summary
+
+This Playwright testing framework emphasizes:
+- **SOLID principles** throughout architecture
+- **Page Object Model** for clean separation
+- **Centralized locators** for maintainability
+- **Async/await** on all operations (mandatory)
+- **Proper error handling** with timeouts
+- **UI-focused testing** (APIs for setup only)
+- **Clear naming** and organization
+- **Method chaining** for fluent APIs
+- **Component composition** for reusability
+- **Single responsibility** per test
+
+**Every AI suggestion must align with these principles.**
+
+## Reference
+For detailed information, always refer to `.github/playwright-framework-instruction.md`
+
