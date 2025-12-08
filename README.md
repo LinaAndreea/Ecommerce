@@ -11,19 +11,31 @@ This test suite has been refactored to follow SOLID principles for better mainta
 ├── 📄 playwright.config.js          # Main Playwright configuration
 ├── 📄 custom-reporter.js            # Custom test reporter
 ├── 📄 package.json                  # Project dependencies
+├── 📁 .github/
+│   └── 📁 factories/
+│       └── TestFactory.js           # Test object factory
 ├── 📁 services/                     # Shared utility services
 │   ├── ApiService.js
 │   ├── ConfigService.js
 │   ├── DataPersistenceService.js
 │   └── UserDataGenerator.js
-└── 📁 tests/                        # Test files and test-specific utilities
-    ├── 📁 factories/
-    │   └── TestFactory.js           # Test object factory
-    ├── 📁 pages/                    # Page Object Models
-    │   ├── BasePage.js
-    │   ├── homepage.js
-    │   └── shopByCategoryPage.js
-    ├── *.spec.js                    # Test specification files
+├── 📁 pages/                        # Page Object Models
+│   ├── BasePage.js                  # Base class for all pages
+│   ├── HomePage.js                  # Home page interactions
+│   ├── LoginPage.js                 # Login page interactions
+│   ├── MainMenuPage.js              # Main menu navigation
+│   ├── MyAccountPage.js             # Account & logout interactions
+│   ├── RegistrationPage.js          # User registration interactions
+│   ├── SearchResultsPage.js         # Search functionality
+│   └── ShopByCategoryPage.js        # Category page interactions
+└── 📁 tests/                        # Test specification files
+    ├── ApiLogin.spec.js             # API login tests
+    ├── ApiRegister.spec.js          # API registration tests
+    ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
+    ├── HomePage.spec.js             # Homepage UI tests
+    ├── MainMenu.spec.js             # Main menu tests
+    ├── Search.spec.js               # Search functionality tests
+    ├── ShopByCategoryPage.spec.js   # Category page tests
     └── test-user.json               # Test data
 ```
 
@@ -35,14 +47,18 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **DataPersistenceService**: Data storage operations
 - **UserDataGenerator**: Test data generation strategies
 
-### Pages Layer (`/tests/pages/`)
+### Pages Layer (`/pages/`)
 - **BasePage**: Common page functionality and abstractions
 - **HomePage**: Home page specific interactions
+- **LoginPage**: Login form and authentication UI interactions
+- **MyAccountPage**: Account management and logout functionality
+- **RegistrationPage**: User registration form interactions
+- **MainMenuPage**: Main menu hover and navigation interactions
 - **ShopByCategoryPage**: Category page specific interactions
 - **SearchResultsPage**: Product search and results handling
 
-### Factories Layer (`/tests/factories/`)
-- **TestFactory**: Dependency injection and object creation
+### Factories Layer (`/.github/factories/`)
+- **TestFactory**: Dependency injection and object creation for all Page Objects and Services
 
 ## SOLID Principles Applied
 
@@ -120,7 +136,9 @@ The test suite includes:
 - **API Tests**: User registration and login functionality
 - **Navigation Tests**: Home page and category page navigation
 - **Search Tests**: Product search functionality and result validation
-- **Component Tests**: UI component verification (carousels, categories, etc.)
+- **Component Tests**: UI component verification (carousels, categories, menus)
+- **Authentication Tests**: Login, logout, and registration UI flows
+- **Validation Tests**: Duplicate email registration prevention
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration

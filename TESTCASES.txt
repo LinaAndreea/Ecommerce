@@ -2,7 +2,7 @@
                         E-COMMERCE TEST CASES DOCUMENTATION
 ================================================================================
 Project: E-commerce Playwright Test Suite
-Date: October 24, 2025
+Date: December 8, 2025
 Test Framework: Playwright
 Architecture: SOLID Principles Implementation
 
@@ -12,7 +12,7 @@ Architecture: SOLID Principles Implementation
 
 TEST CASE ID: API_REG_001
 Test Name: Register New User via API Successfully
-Test File: tests/apiRegister.spec.js
+Test File: tests/ApiRegister.spec.js
 Test Method: should register new user via API successfully
 
 Description:
@@ -53,7 +53,7 @@ Dependencies: ConfigService, ApiService, DataPersistenceService, UserDataGenerat
 
 TEST CASE ID: API_REG_002
 Test Name: Register User with Custom Data
-Test File: tests/apiRegister.spec.js
+Test File: tests/ApiRegister.spec.js
 Test Method: should handle registration with custom user data
 
 Description:
@@ -94,7 +94,7 @@ Dependencies: UserDataGenerator, ApiService
 
 TEST CASE ID: API_LOGIN_001
 Test Name: Login with Registered User Credentials
-Test File: tests/apiLogin.spec.js
+Test File: tests/ApiLogin.spec.js
 Test Method: should login successfully with registered user credentials
 
 Description:
@@ -133,7 +133,7 @@ Dependencies: TestFactory, ApiService, DataPersistenceService, ConfigService
 
 TEST CASE ID: API_LOGIN_002
 Test Name: Handle Invalid Credentials Appropriately
-Test File: tests/apiLogin.spec.js
+Test File: tests/ApiLogin.spec.js
 Test Method: should handle invalid credentials without authentication
 
 Description:
@@ -169,7 +169,7 @@ Dependencies: TestFactory, ApiService, ConfigService
 
 TEST CASE ID: API_LOGIN_003
 Test Name: Login with Newly Created User Credentials
-Test File: tests/apiLogin.spec.js
+Test File: tests/ApiLogin.spec.js
 Test Method: should login with newly created user credentials
 
 Description:
@@ -207,7 +207,7 @@ Dependencies: TestFactory, ApiService, UserDataGenerator, ConfigService
 
 TEST CASE ID: API_LOGIN_004
 Test Name: Handle Empty Credentials Gracefully
-Test File: tests/apiLogin.spec.js
+Test File: tests/ApiLogin.spec.js
 Test Method: should handle empty credentials gracefully
 
 Description:
@@ -247,7 +247,7 @@ Dependencies: TestFactory, ApiService, ConfigService
 
 TEST CASE ID: HOME_NAV_001
 Test Name: Verify Home Navigation Link Text
-Test File: tests/homepage.spec.js
+Test File: tests/HomePage.spec.js
 Test Method: should display correct text in home navigation link
 
 Description:
@@ -281,7 +281,7 @@ Dependencies: TestFactory, HomePage, BasePage, ConfigService
 
 TEST CASE ID: HOME_NAV_002
 Test Name: Verify Home Page Navigation
-Test File: tests/homepage.spec.js
+Test File: tests/HomePage.spec.js
 Test Method: should navigate to home page successfully
 
 Description:
@@ -319,7 +319,7 @@ Dependencies: TestFactory, HomePage, BasePage, ConfigService
 
 TEST CASE ID: CATEGORY_001
 Test Name: Navigate to Category Page
-Test File: tests/shopByCategoryPage.spec.js
+Test File: tests/ShopByCategoryPage.spec.js
 Test Method: should navigate to category page successfully
 
 Description:
@@ -352,7 +352,7 @@ Dependencies: TestFactory, ShopByCategoryPage, BasePage
 
 TEST CASE ID: CATEGORY_002
 Test Name: Verify Category Section Visibility
-Test File: tests/shopByCategoryPage.spec.js
+Test File: tests/ShopByCategoryPage.spec.js
 Test Method: should display category section after clicking shop by category button
 
 Description:
@@ -388,7 +388,7 @@ Dependencies: TestFactory, ShopByCategoryPage, BasePage, ConfigService
 
 TEST CASE ID: CATEGORY_003
 Test Name: Validate Category Components Display with Proper Names
-Test File: tests/shopByCategoryPage.spec.js
+Test File: tests/ShopByCategoryPage.spec.js
 Test Method: should display category components with proper names after clicking shop by category
 
 Description:
@@ -437,7 +437,7 @@ Dependencies: TestFactory, ShopByCategoryPage, BasePage, ConfigService
 
 TEST CASE ID: SEARCH_001
 Test Name: Search for iPhone and Display Results with Matching Products
-Test File: tests/search.spec.js
+Test File: tests/Search.spec.js
 Test Method: should search for iPhone and display results with matching products
 
 Description:
@@ -477,7 +477,7 @@ Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
 
 TEST CASE ID: SEARCH_002
 Test Name: Display All Product Titles in Search Results
-Test File: tests/search.spec.js
+Test File: tests/Search.spec.js
 Test Method: should display all product titles in search results
 
 Description:
@@ -516,7 +516,7 @@ Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
 
 TEST CASE ID: SEARCH_003
 Test Name: Find Specific Product in Search Results
-Test File: tests/search.spec.js
+Test File: tests/Search.spec.js
 Test Method: should find specific product - iPhone in search results
 
 Description:
@@ -552,7 +552,7 @@ Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
 
 TEST CASE ID: SEARCH_004
 Test Name: Handle Search with No Results Gracefully
-Test File: tests/search.spec.js
+Test File: tests/Search.spec.js
 Test Method: should handle search with no results gracefully
 
 Description:
@@ -587,12 +587,116 @@ Test Type: UI, Search, Edge Case, Error Handling
 Dependencies: TestFactory, SearchResultsPage, BasePage, ConfigService
 
 ================================================================================
+                     DUPLICATE EMAIL REGISTRATION TESTS
+================================================================================
+
+TEST CASE ID: DUP_EMAIL_001
+Test Name: Display Error Message When Registering with Existing Email After Login and Logout
+Test File: tests/DuplicateEmailRegistration.spec.js
+Test Method: should display error message when registering with existing email after login and logout
+
+Description:
+    Verify that the application prevents duplicate email registration by displaying
+    an appropriate error message when a user attempts to register with an email
+    that is already associated with an existing account. This test follows the
+    complete user flow: login, logout, then attempt registration with same email.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API registration endpoint is available
+    - Test user is registered via API in beforeEach hook
+    - Login, logout, and registration UI pages are functional
+
+Test Steps:
+    1. Pre-condition: Register test user via API
+    2. Navigate to login page
+    3. Login with test account credentials
+    4. Verify login was successful (URL contains account/account)
+    5. Logout from the application via dropdown menu
+    6. Verify logout was successful (logout heading displayed)
+    7. Navigate to Create Account (registration) page
+    8. Verify registration page is displayed
+    9. Fill in registration form using the SAME email as logged-in user
+    10. Accept privacy policy
+    11. Click Continue/Submit button
+    12. Verify account is NOT created (no redirect to success page)
+    13. Verify error message is displayed
+    14. Verify error message relates to email already existing
+
+Test Data:
+    - Test user: Generated by UserDataGenerator.generateUniqueUser()
+    - Email: "test+{timestamp}@mail.com" (same as pre-registered user)
+    - Duplicate user firstname: "Duplicate"
+    - Duplicate user lastname: "User"
+    - Password: "Password123!"
+
+Expected Results:
+    - Login successful - URL contains "account/account"
+    - Logout successful - logout heading displayed
+    - Registration page displayed - heading contains "register"
+    - Account NOT created - no redirect to success page
+    - Error alert is visible on page
+    - Error message contains: "already", "registered", "exists", or "e-mail"
+    - Console displays step-by-step progress logs
+    - Console displays: "✅ Test passed: Duplicate email registration prevented successfully"
+
+Priority: High
+Test Type: UI, End-to-End, Validation, Security
+Dependencies: TestFactory, LoginPage, MyAccountPage, RegistrationPage, ApiService, UserDataGenerator
+
+
+TEST CASE ID: DUP_EMAIL_002
+Test Name: Prevent Duplicate Email Registration via Direct Navigation
+Test File: tests/DuplicateEmailRegistration.spec.js
+Test Method: should prevent duplicate email registration via direct navigation to registration
+
+Description:
+    Verify that the email uniqueness validation works correctly when navigating
+    directly to the registration page without going through login/logout flow.
+    This is a regression test variant that tests the validation in isolation.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API registration endpoint is available
+    - Test user is registered via API in beforeEach hook
+    - Registration UI page is functional
+
+Test Steps:
+    1. Pre-condition: Register test user via API
+    2. Navigate directly to registration page
+    3. Fill registration form with existing email (from pre-registered user)
+    4. Accept privacy policy
+    5. Submit registration
+    6. Verify registration fails (no redirect to success page)
+    7. Verify error message is displayed
+    8. Verify user remains on registration page
+
+Test Data:
+    - Test user: Generated by UserDataGenerator.generateUniqueUser()
+    - Email: "test+{timestamp}@mail.com" (same as pre-registered user)
+    - Duplicate user firstname: "Another"
+    - Duplicate user lastname: "Duplicate"
+    - Password: "Password123!"
+
+Expected Results:
+    - Registration page loads successfully
+    - Registration fails - isRegistrationSuccessful() returns false
+    - Error alert is visible on page
+    - Error message is not empty
+    - URL still contains "register" (not redirected)
+    - Console displays: "✅ Test passed: User remains on registration page after duplicate email attempt"
+
+Priority: Medium
+Test Type: UI, Regression, Validation
+Dependencies: TestFactory, RegistrationPage, ApiService, UserDataGenerator
+
+================================================================================
                           HOME PAGE UI TESTS
 ================================================================================
 
 TEST CASE ID: HOME_UI_001
 Test Name: Display Featured Product Carousel with Exactly Three Slides
-Test File: tests/homepage.spec.js
+Test File: tests/HomePage.spec.js
 Test Method: should display featured product carousel with exactly three slides
 
 Description:
@@ -634,24 +738,75 @@ Test Type: UI, Component Verification, Visual Testing
 Dependencies: TestFactory, HomePage, BasePage, ConfigService
 
 ================================================================================
+                          MAIN MENU NAVIGATION TESTS
+================================================================================
+
+TEST CASE ID: MENU_001
+Test Name: Display All Categories When Hovering Over Main Menu
+Test File: tests/MainMenu.spec.js
+Test Method: should display all categories when hovering over Main Menu
+
+Description:
+    Verify that hovering over the "Mega Menu" dropdown in the main navigation
+    displays all product categories in the dropdown panel. This tests the
+    hover interaction and visibility of category links.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Home page loads successfully
+    - Main navigation bar with "Mega Menu" dropdown is present
+    - JavaScript is enabled for hover interactions
+
+Test Steps:
+    1. Navigate to home page
+    2. Locate the "Mega Menu" dropdown toggle in navigation
+    3. Hover over the Mega Menu element
+    4. Wait for dropdown animation to complete (500ms)
+    5. Verify all category headings become visible
+    6. Assert Mobiles category is visible
+    7. Assert Accessories category is visible
+
+Test Data:
+    - Main menu selector: 'a.dropdown-toggle' with text "Mega Menu"
+    - Category selectors: 'h3.design-title' with category names
+    - Categories verified: Mobiles, Accessories, Computers, Laptops, 
+      Smart Wearables, Sound System
+
+Expected Results:
+    - Mega Menu dropdown opens on hover
+    - All six category headings are visible:
+      * Mobiles
+      * Accessories
+      * Computers
+      * Laptops
+      * Smart Wearables
+      * Sound System
+    - Each category waits for visibility with 5000ms timeout
+    - No errors during hover interaction
+
+Priority: High
+Test Type: UI, Navigation, Interaction
+Dependencies: MainMenuPage, BasePage
+
+================================================================================
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 16
+Total Test Cases: 19
 - API Tests: 6 (2 Registration + 4 Login)
-- UI Navigation Tests: 2
+- UI Navigation Tests: 3 (including 1 Main Menu test)
 - UI Interaction Tests: 2
-- UI Validation Tests: 1
+- UI Validation Tests: 3 (including 2 Duplicate Email tests)
 - UI Search Tests: 4
 - UI Component Tests: 1
 
 Priority Distribution:
-- High Priority: 10 tests
-- Medium Priority: 6 tests
+- High Priority: 12 tests
+- Medium Priority: 7 tests
 
 Test Types:
 - API/Integration: 6 tests
-- UI/Functional: 10 tests
+- UI/Functional: 13 tests
 
 SOLID Principles Implementation:
 ✅ Single Responsibility Principle (SRP)
@@ -668,14 +823,16 @@ Architecture Benefits:
 - Clean separation of concerns
 
 Test Execution Commands:
-    npx playwright test                    # Run all tests
-    npx playwright test tests/api*.spec.js # Run only API tests
-    npx playwright test tests/homepage*    # Run only homepage tests
-    npx playwright test tests/shop*        # Run only shop category tests
-    npx playwright test tests/search*      # Run only search tests
+    npx playwright test                     # Run all tests
+    npx playwright test tests/Api*.spec.js  # Run only API tests
+    npx playwright test tests/HomePage*     # Run only homepage tests
+    npx playwright test tests/Shop*         # Run only shop category tests
+    npx playwright test tests/Search*       # Run only search tests
+    npx playwright test tests/Duplicate*    # Run only duplicate email tests
+    npx playwright test tests/MainMenu*     # Run only main menu tests
 
 Expected Overall Results:
-    16 passed tests in approximately 20-25 seconds
+    19 passed tests in approximately 25-30 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -684,6 +841,8 @@ Expected Overall Results:
     - Category component validation with names and counts
     - Search results with product matches and counts
     - Carousel visibility and slide count verification
+    - Duplicate email registration prevention with error messages
+    - Main menu category visibility verification
 
 ================================================================================
                                     NOTES
@@ -707,7 +866,13 @@ Expected Overall Results:
    - SOLID principles ensure easy maintenance and extension
    - New tests can leverage existing services and factories
 
-5. Future Enhancements:
+5. Page Objects Added:
+   - LoginPage: Handles UI login form interactions and validation
+   - MyAccountPage: Handles authenticated user actions and logout
+   - RegistrationPage: Handles user registration form and validation
+   - MainMenuPage: Handles main menu hover and category navigation
+
+6. Future Enhancements:
    - Additional page objects can extend BasePage
    - New test scenarios can reuse existing services
    - Configuration can be extended for multiple environments
