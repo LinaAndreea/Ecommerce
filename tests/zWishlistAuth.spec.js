@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { LoginPage } = require('../pages/LoginPage');
-const { WishlistPage } = require('../pages/WishlistPage');
+const { WishlistPage } = require('../pages/zWishlistPage');
 const { HomePage } = require('../pages/HomePage');
 const { TestFactory } = require('../.github/factories/TestFactory');
 
