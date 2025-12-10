@@ -738,6 +738,62 @@ Test Type: UI, Component Verification, Visual Testing
 Dependencies: TestFactory, HomePage, BasePage, ConfigService
 
 ================================================================================
+                          COMPARE PRODUCTS TESTS
+================================================================================
+
+TEST CASE ID: COMPARE_001
+Test Name: Display Same Products That Were Selected for Comparison
+Test File: tests/CompareProducts.spec.js
+Test Method: should display the same products that were selected for comparison
+
+Description:
+    Verify that when a logged-in user marks 3 products for comparison and
+    navigates to the compare items page, the application displays the same
+    products that were selected.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in
+    - Products are available for comparison
+    - Compare functionality is enabled
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to product listing page (category path=18)
+    5. Verify at least 3 products are displayed
+    6. Add first 3 products to compare by clicking compare buttons
+    7. Store the names of products added to compare
+    8. Navigate to compare items page
+    9. Verify compare page is displayed
+    10. Verify compare table is visible
+    11. Verify exactly 3 products are in compare table
+    12. Verify all selected products appear in compare list
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Products: First 3 products from category page (e.g., HTC Touch HD, Palm Treo Pro, Canon EOS 5D)
+    - Category path: /index.php?route=product/category&path=18
+
+Expected Results:
+    - Login is successful
+    - 3 products are successfully added to compare
+    - Compare page displays "Product Comparison" heading
+    - Compare table is visible
+    - Exactly 3 products are shown in compare table
+    - All selected product names match those in compare list
+    - verifyProductsInCompareList returns allFound: true
+    - Console displays: "Products added to compare: [array]"
+    - Console displays: "Compared products: [array]"
+
+Priority: High
+Test Type: UI, End-to-End, Functional
+Dependencies: TestFactory, LoginPage, ProductListingPage, ComparePage
+
+
+================================================================================
                           MAIN MENU NAVIGATION TESTS
 ================================================================================
 
@@ -792,21 +848,22 @@ Dependencies: MainMenuPage, BasePage
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 19
+Total Test Cases: 20
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 3 (including 1 Main Menu test)
 - UI Interaction Tests: 2
 - UI Validation Tests: 3 (including 2 Duplicate Email tests)
 - UI Search Tests: 4
 - UI Component Tests: 1
+- Compare Products Tests: 1
 
 Priority Distribution:
-- High Priority: 12 tests
+- High Priority: 13 tests
 - Medium Priority: 7 tests
 
 Test Types:
 - API/Integration: 6 tests
-- UI/Functional: 13 tests
+- UI/Functional: 15 tests
 
 SOLID Principles Implementation:
 ✅ Single Responsibility Principle (SRP)
@@ -830,9 +887,10 @@ Test Execution Commands:
     npx playwright test tests/Search*       # Run only search tests
     npx playwright test tests/Duplicate*    # Run only duplicate email tests
     npx playwright test tests/MainMenu*     # Run only main menu tests
+    npx playwright test tests/Compare*      # Run only compare products tests
 
 Expected Overall Results:
-    19 passed tests in approximately 25-30 seconds
+    20 passed tests in approximately 30-40 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -843,6 +901,7 @@ Expected Overall Results:
     - Carousel visibility and slide count verification
     - Duplicate email registration prevention with error messages
     - Main menu category visibility verification
+    - Compare products verification with product names matching
 
 ================================================================================
                                     NOTES
@@ -871,6 +930,8 @@ Expected Overall Results:
    - MyAccountPage: Handles authenticated user actions and logout
    - RegistrationPage: Handles user registration form and validation
    - MainMenuPage: Handles main menu hover and category navigation
+   - ProductListingPage: Handles product browsing and adding to compare
+   - ComparePage: Handles product comparison page interactions
 
 6. Future Enhancements:
    - Additional page objects can extend BasePage

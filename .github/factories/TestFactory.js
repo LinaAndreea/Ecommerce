@@ -4,6 +4,8 @@ const { SearchResultsPage } = require('../../pages/SearchResultsPage');
 const { LoginPage } = require('../../pages/LoginPage');
 const { MyAccountPage } = require('../../pages/MyAccountPage');
 const { RegistrationPage } = require('../../pages/RegistrationPage');
+const { ProductListingPage } = require('../../pages/ProductListingPage');
+const { ComparePage } = require('../../pages/ComparePage');
 const { ConfigService } = require('../../services/ConfigService');
 const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
@@ -72,6 +74,24 @@ class TestFactory {
      */
     createRegistrationPage(page) {
         return new RegistrationPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a ProductListingPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {ProductListingPage}
+     */
+    createProductListingPage(page) {
+        return new ProductListingPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a ComparePage instance
+     * @param {Page} page - Playwright page object
+     * @returns {ComparePage}
+     */
+    createComparePage(page) {
+        return new ComparePage(page, this.baseUrl);
     }
 
     /**
