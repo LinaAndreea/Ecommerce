@@ -28,10 +28,13 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── MyAccountPage.js             # Account & logout interactions
 │   ├── RegistrationPage.js          # User registration interactions
 │   ├── SearchResultsPage.js         # Search functionality
-│   └── ShopByCategoryPage.js        # Category page interactions
+│   ├── ShopByCategoryPage.js        # Category page interactions
+│   ├── ProductListingPage.js        # Product browsing & compare
+│   └── ComparePage.js               # Compare products functionality
 └── 📁 tests/                        # Test specification files
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
+    ├── CompareProducts.spec.js      # Compare products tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
     ├── HomePage.spec.js             # Homepage UI tests
     ├── MainMenu.spec.js             # Main menu tests
@@ -57,6 +60,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **MainMenuPage**: Main menu hover and navigation interactions
 - **ShopByCategoryPage**: Category page specific interactions
 - **SearchResultsPage**: Product search and results handling
+- **ProductListingPage**: Product browsing and compare functionality
+- **ComparePage**: Product comparison page interactions
 
 ### Factories Layer (`/.github/factories/`)
 - **TestFactory**: Dependency injection and object creation for all Page Objects and Services
@@ -140,6 +145,7 @@ The test suite includes:
 - **Component Tests**: UI component verification (carousels, categories, menus)
 - **Authentication Tests**: Login, logout, and registration UI flows
 - **Validation Tests**: Duplicate email registration prevention
+- **Compare Tests**: Product comparison functionality with verification
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration
