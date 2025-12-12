@@ -24,6 +24,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── BasePage.js                  # Base class for all pages
 │   ├── HomePage.js                  # Home page interactions
 │   ├── LoginPage.js                 # Login page interactions
+│   ├── WishlistPage.js              # Wishlist page interactions
+│   ├── ProductFilterPage.js         # Product filtering interactions
 │   ├── MainMenuPage.js              # Main menu navigation
 │   ├── MyAccountPage.js             # Account & logout interactions
 │   ├── RegistrationPage.js          # User registration interactions
@@ -35,6 +37,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
     ├── CompareProducts.spec.js      # Compare products tests
+    ├── WishlistAuth.spec.js         # Wishlist authentication tests
+    ├── ProductFilter.spec.js        # Product filtering tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
     ├── HomePage.spec.js             # Homepage UI tests
     ├── MainMenu.spec.js             # Main menu tests
@@ -62,6 +66,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **SearchResultsPage**: Product search and results handling
 - **ProductListingPage**: Product browsing and compare functionality
 - **ComparePage**: Product comparison page interactions
+- **WishlistPage**: Wishlist specific interactions
+- **ProductFilterPage**: Product filtering interactions
 
 ### Factories Layer (`/.github/factories/`)
 - **TestFactory**: Dependency injection and object creation for all Page Objects and Services
@@ -142,6 +148,7 @@ The test suite includes:
 - **API Tests**: User registration and login functionality
 - **Navigation Tests**: Home page and category page navigation
 - **Search Tests**: Product search functionality and result validation
+- **Filter Tests**: Product filtering with multiple filter combinations
 - **Component Tests**: UI component verification (carousels, categories, menus)
 - **Authentication Tests**: Login, logout, and registration UI flows
 - **Validation Tests**: Duplicate email registration prevention

@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { LoginPage } = require('../pages/LoginPage');
-const { WishlistPage } = require('../pages/zWishlistPage');
 const { HomePage } = require('../pages/HomePage');
+const { WishlistPage } = require('../pages/WishlistPage');
 const { TestFactory } = require('../.github/factories/TestFactory');
 
 test.describe('WishList Access Control For Visitors:', () => {
