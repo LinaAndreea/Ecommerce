@@ -95,6 +95,10 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 4,
+  timeout: 60000, // 60 seconds per test
+  expect: {
+    timeout: 10000 // 10 seconds for assertions
+  },
 
   reporter: [
     ['html', { outputFolder: 'playwright-report',open: 'never' }],
@@ -105,7 +109,9 @@ module.exports = defineConfig({
   use: {
     baseURL: 'https://ecommerce-playground.lambdatest.io/index.php?route=common/home',
     trace: 'on-first-retry',
-    headless: true
+    headless: true,
+    navigationTimeout: 30000, // 30 seconds for navigation
+    actionTimeout: 15000 // 15 seconds for actions
   },
 
   projects: [

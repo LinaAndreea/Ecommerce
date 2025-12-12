@@ -1,4 +1,4 @@
-const { BasePage } = require('./BasePage');
+﻿const { BasePage } = require('./BasePage');
 
 /**
  * Login Page - Handles all login page interactions
@@ -94,4 +94,3 @@ class LoginPage extends BasePage {
 }
 
 module.exports = { LoginPage };
-

@@ -30,10 +30,13 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── MyAccountPage.js             # Account & logout interactions
 │   ├── RegistrationPage.js          # User registration interactions
 │   ├── SearchResultsPage.js         # Search functionality
-│   └── ShopByCategoryPage.js        # Category page interactions
+│   ├── ShopByCategoryPage.js        # Category page interactions
+│   ├── ProductListingPage.js        # Product browsing & compare
+│   └── ComparePage.js               # Compare products functionality
 └── 📁 tests/                        # Test specification files
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
+    ├── CompareProducts.spec.js      # Compare products tests
     ├── WishlistAuth.spec.js         # Wishlist authentication tests
     ├── ProductFilter.spec.js        # Product filtering tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
@@ -61,6 +64,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **MainMenuPage**: Main menu hover and navigation interactions
 - **ShopByCategoryPage**: Category page specific interactions
 - **SearchResultsPage**: Product search and results handling
+- **ProductListingPage**: Product browsing and compare functionality
+- **ComparePage**: Product comparison page interactions
 - **WishlistPage**: Wishlist specific interactions
 - **ProductFilterPage**: Product filtering interactions
 
@@ -147,6 +152,7 @@ The test suite includes:
 - **Component Tests**: UI component verification (carousels, categories, menus)
 - **Authentication Tests**: Login, logout, and registration UI flows
 - **Validation Tests**: Duplicate email registration prevention
+- **Compare Tests**: Product comparison functionality with verification
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration
