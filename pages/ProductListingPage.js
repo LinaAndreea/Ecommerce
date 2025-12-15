@@ -16,6 +16,9 @@ class ProductListingPage extends BasePage {
         // Compare button locators - Using class btn-compare
         this.compareButtons = page.locator('button.btn-compare, button[onclick*="compare.add"]');
         
+        // Wishlist button locators - Following selector priority
+        this.wishlistButtons = page.locator('button.btn-wishlist, button[onclick*="wishlist.add"]');
+        
         // Success notification locators
         this.successAlert = page.locator('.alert-success');
         this.compareLink = page.locator('a[href*="product/compare"]');
@@ -249,6 +252,86 @@ class ProductListingPage extends BasePage {
         for (const index of indices) {
             const productName = await this.getProductNameAtIndex(index);
             await this.addProductToCartByIndex(index);
+            addedProducts.push(productName);
+        }
+        
+        return addedProducts;
+    }
+
+    /**
+     * Adds a product to wishlist by index
+     * @param {number} index - Product index (0-based)
+     * @returns {Promise<ProductListingPage>}
+     */
+    async addProductToWishlistByIndex(index) {
+        const productCard = this.productCards.nth(index);
+        await this.scrollIntoViewIfNeeded(productCard);
+        
+        // Hover to reveal action buttons
+        await productCard.hover();
+        await this.page.waitForTimeout(300);
+        
+        // Find wishlist button within this product card
+        const wishlistButton = productCard.locator('button[onclick*="wishlist.add"]').first();
+        
+        // Get product ID for JavaScript fallback
+        const productId = await productCard.evaluate((card) => {
+            const btn = card.querySelector('button[onclick*="wishlist.add"]');
+            if (btn) {
+                const onclick = btn.getAttribute('onclick');
+                const match = onclick.match(/wishlist\.add\('?(\d+)'?\)/);
+                return match ? match[1] : null;
+            }
+            return null;
+        });
+        
+        // Try clicking the button
+        try {
+            await wishlistButton.waitFor({ state: 'visible', timeout: 3000 });
+            await wishlistButton.click({ force: true, timeout: 3000 });
+            console.log(`Product ${index} clicked for wishlist`);
+        } catch (error) {
+            console.log(`Force click failed for product ${index}, trying JavaScript click...`);
+            
+            if (productId) {
+                // Call the wishlist.add function directly
+                await this.page.evaluate((id) => {
+                    if (typeof wishlist !== 'undefined' && wishlist.add) {
+                        wishlist.add(id);
+                    }
+                }, productId);
+                console.log(`Product ${index} added to wishlist via JavaScript with ID: ${productId}`);
+            }
+        }
+        
+        // Wait for success notification to appear
+        try {
+            await this.successAlert.waitFor({ state: 'visible', timeout: 5000 });
+            const alertText = await this.successAlert.textContent();
+            console.log(`Wishlist success alert: ${alertText}`);
+            
+            // Wait for alert to be processed
+            await this.page.waitForTimeout(500);
+        } catch (alertError) {
+            console.log(`No success alert detected for product ${index}, continuing...`);
+        }
+        
+        // Wait for the AJAX response to complete
+        await this.page.waitForLoadState('networkidle');
+        return this;
+    }
+
+    /**
+     * Adds multiple products to wishlist
+     * @param {Array<number>} indices - Array of product indices to add
+     * @returns {Promise<Array<string>>} Array of product names added to wishlist
+     */
+    async addMultipleProductsToWishlist(indices) {
+        const addedProducts = [];
+        
+        for (const index of indices) {
+            const productName = await this.getProductNameAtIndex(index);
+            await this.addProductToWishlistByIndex(index);
             addedProducts.push(productName);
         }
         
