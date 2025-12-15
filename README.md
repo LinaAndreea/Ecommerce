@@ -38,6 +38,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
     ├── ApiRegister.spec.js          # API registration tests
     ├── CompareProducts.spec.js      # Compare products tests
     ├── WishlistAuth.spec.js         # Wishlist authentication tests
+    ├── WishlistPersistence.spec.js  # Wishlist persistence after re-login
     ├── ProductFilter.spec.js        # Product filtering tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
     ├── HomePage.spec.js             # Homepage UI tests
@@ -153,6 +154,7 @@ The test suite includes:
 - **Authentication Tests**: Login, logout, and registration UI flows
 - **Validation Tests**: Duplicate email registration prevention
 - **Compare Tests**: Product comparison functionality with verification
+- **Wishlist Tests**: Wishlist persistence after re-login
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration

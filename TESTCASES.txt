@@ -845,10 +845,70 @@ Test Type: UI, Navigation, Interaction
 Dependencies: MainMenuPage, BasePage
 
 ================================================================================
+                          WISHLIST PERSISTENCE TESTS
+================================================================================
+
+TEST CASE ID: WISHLIST_PERSIST_001
+Test Name: Persist Wishlist Items After Re-Login
+Test File: tests/WishlistPersistence.spec.js
+Test Method: should persist wishlist items after re-login
+
+Description:
+    Verify that when a logged-in user adds products to their wishlist, logs out,
+    and logs back in, the wishlist items are persisted and still visible.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in and log out
+    - Products are available to add to wishlist
+    - Wishlist functionality is enabled
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to product listing page (category path=18)
+    5. Verify at least 3 products are displayed
+    6. Add first 3 products to wishlist by clicking wishlist buttons
+    7. Store the names of products added to wishlist
+    8. Navigate to wishlist page and verify products are added
+    9. Logout from the application
+    10. Verify logout was successful
+    11. Login again with same credentials
+    12. Verify re-login was successful
+    13. Navigate to wishlist page
+    14. Verify wishlist contains at least 3 products
+    15. Verify all selected products appear in wishlist
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Products: First 3 products from category page (e.g., HTC Touch HD, Palm Treo Pro, Canon EOS 5D)
+    - Category path: /index.php?route=product/category&path=18
+
+Expected Results:
+    - Initial login is successful
+    - 3 products are successfully added to wishlist
+    - Products are visible in wishlist before logout
+    - Logout is successful
+    - Re-login is successful
+    - Wishlist contains at least 3 products after re-login
+    - All selected product names are present in wishlist
+    - verifyProductsInWishlist returns allFound: true
+    - Console displays: "Products added to wishlist: [array]"
+    - Console displays: "Wishlist products BEFORE logout: [array]"
+    - Console displays: "Wishlist products after re-login: [array]"
+
+Priority: High
+Test Type: UI, End-to-End, Functional, Persistence
+Dependencies: TestFactory, LoginPage, ProductListingPage, WishlistPage, MyAccountPage
+
+
+================================================================================
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 20
+Total Test Cases: 21
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 3 (including 1 Main Menu test)
 - UI Interaction Tests: 2
@@ -856,9 +916,10 @@ Total Test Cases: 20
 - UI Search Tests: 4
 - UI Component Tests: 1
 - Compare Products Tests: 1
+- Wishlist Persistence Tests: 1
 
 Priority Distribution:
-- High Priority: 13 tests
+- High Priority: 14 tests
 - Medium Priority: 7 tests
 
 Test Types:
@@ -888,9 +949,10 @@ Test Execution Commands:
     npx playwright test tests/Duplicate*    # Run only duplicate email tests
     npx playwright test tests/MainMenu*     # Run only main menu tests
     npx playwright test tests/Compare*      # Run only compare products tests
+    npx playwright test tests/Wishlist*     # Run only wishlist tests
 
 Expected Overall Results:
-    20 passed tests in approximately 30-40 seconds
+    21 passed tests in approximately 35-45 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -902,6 +964,7 @@ Expected Overall Results:
     - Duplicate email registration prevention with error messages
     - Main menu category visibility verification
     - Compare products verification with product names matching
+    - Wishlist persistence verification after re-login
 
 ================================================================================
                                     NOTES
