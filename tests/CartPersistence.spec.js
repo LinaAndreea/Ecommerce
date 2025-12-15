@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { LoginPage } = require('../pages/LoginPage');
-const { ProductPage } = require('../pages/ProductPage');
+const { ProductListingPage } = require('../pages/ProductListingPage');
 const { CartPage } = require('../pages/CartPage');
 const { MyAccountPage } = require('../pages/MyAccountPage');
 const { TestFactory } = require('../.github/factories/TestFactory');
@@ -14,7 +14,7 @@ const { TestFactory } = require('../.github/factories/TestFactory');
 test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
 
   let loginPage;
-  let productPage;
+  let productListingPage;
   let cartPage;
   let myAccountPage;
   let configService;
@@ -29,7 +29,7 @@ test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
     const baseUrl = configService.get('baseURL');
     
     loginPage = new LoginPage(page, baseUrl);
-    productPage = new ProductPage(page, baseUrl);
+    productListingPage = new ProductListingPage(page, baseUrl);
     cartPage = new CartPage(page, baseUrl);
     myAccountPage = new MyAccountPage(page, baseUrl);
     
@@ -53,21 +53,15 @@ test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
     console.log('✅ User logged in successfully:', savedCredentials.email);
     
     // And I have added at least 2 items in the shopping cart
-    console.log('🛒 Adding products to cart...');
+    console.log('🛒 Adding products to cart from listing page...');
     
-    // Add first product (example: laptop)
-    await productPage.navigateToProduct('/index.php?route=product/product&product_id=43');
-    const product1Name = await productPage.getProductName();
-    await productPage.addToCart();
-    addedProducts.push(product1Name);
-    console.log('✅ Added product 1:', product1Name);
+    // Navigate to product listing page (Laptops category)
+    await productListingPage.navigateToCategory('/index.php?route=product/category&path=18');
     
-    // Add second product (example: MacBook)
-    await productPage.navigateToProduct('/index.php?route=product/product&product_id=44');
-    const product2Name = await productPage.getProductName();
-    await productPage.addToCart();
-    addedProducts.push(product2Name);
-    console.log('✅ Added product 2:', product2Name);
+    // Add first two products to cart
+    addedProducts = await productListingPage.addMultipleProductsToCart([0, 1]);
+    
+    console.log('✅ Added products:', addedProducts);
     
     // Verify cart has 2 items before logout
     await cartPage.navigateToCart();
