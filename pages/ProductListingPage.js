@@ -187,6 +187,73 @@ class ProductListingPage extends BasePage {
     getProductCardLocator(index) {
         return this.productCards.nth(index);
     }
+
+    /**
+     * Adds a product to cart by index from listing page
+     * @param {number} index - Product index (0-based)
+     * @returns {Promise<ProductListingPage>}
+     */
+    async addProductToCartByIndex(index) {
+        const productCard = this.productCards.nth(index);
+        await this.scrollIntoViewIfNeeded(productCard);
+        
+        // Hover to reveal action buttons
+        await productCard.hover();
+        await this.page.waitForTimeout(300);
+        
+        // Find add to cart button within this product card
+        const addToCartButton = productCard.locator('button[onclick*="cart.add"], button:has-text("Add to Cart")').first();
+        
+        try {
+            await addToCartButton.waitFor({ state: 'visible', timeout: 3000 });
+            await addToCartButton.click({ force: true, timeout: 3000 });
+            console.log(`Product ${index} added to cart`);
+        } catch (error) {
+            console.log(`Force click failed for product ${index}, trying JavaScript...`);
+            
+            // Fallback: Get product ID and call cart.add directly
+            const productId = await productCard.evaluate((card) => {
+                const btn = card.querySelector('button[onclick*="cart.add"]');
+                if (btn) {
+                    const onclick = btn.getAttribute('onclick');
+                    const match = onclick.match(/cart\.add\('?(\d+)'?\)/);
+                    return match ? match[1] : null;
+                }
+                return null;
+            });
+            
+            if (productId) {
+                await this.page.evaluate((id) => {
+                    if (typeof cart !== 'undefined' && cart.add) {
+                        cart.add(id);
+                    }
+                }, productId);
+                console.log(`Product ${index} added via JavaScript with ID: ${productId}`);
+            }
+        }
+        
+        // Wait for AJAX
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(1000);
+        return this;
+    }
+
+    /**
+     * Adds multiple products to cart
+     * @param {Array<number>} indices - Array of product indices
+     * @returns {Promise<Array<string>>} Array of product names added
+     */
+    async addMultipleProductsToCart(indices) {
+        const addedProducts = [];
+        
+        for (const index of indices) {
+            const productName = await this.getProductNameAtIndex(index);
+            await this.addProductToCartByIndex(index);
+            addedProducts.push(productName);
+        }
+        
+        return addedProducts;
+    }
 }
 
 module.exports = { ProductListingPage };

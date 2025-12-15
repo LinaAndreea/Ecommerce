@@ -1,9 +1,10 @@
-const { BasePage } = require('./BasePage');
-
 /**
  * Home Page - Handles all home page interactions
  * Encapsulates page elements and provides methods for user interactions
  */
+
+const { BasePage } = require('./BasePage');
+
 class HomePage extends BasePage {
     constructor(page, baseUrl) {
         super(page, baseUrl);
