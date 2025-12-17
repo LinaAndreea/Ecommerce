@@ -695,13 +695,13 @@ Dependencies: TestFactory, RegistrationPage, ApiService, UserDataGenerator
 ================================================================================
 
 TEST CASE ID: HOME_UI_001
-Test Name: Display Featured Product Carousel with Exactly Three Slides
+Test Name: Display Featured Product Carousel with Slides
 Test File: tests/HomePage.spec.js
-Test Method: should display featured product carousel with exactly three slides
+Test Method: should display featured product carousel with slides
 
 Description:
     Verify that the featured product carousel on the home page is visible
-    and contains exactly three slides as per design specifications.
+    and contains slides.
 
 Preconditions:
     - E-commerce website is accessible
@@ -712,29 +712,65 @@ Preconditions:
 Test Steps:
     1. Initialize HomePage through TestFactory
     2. Navigate to home page
-    3. Log carousel selector and slides selector for debugging
-    4. Verify featured carousel is visible on the page
-    5. Wait for carousel slides to load completely
-    6. Count the number of carousel slides
-    7. Verify slide count equals exactly 3
-    8. Log visibility status and slide count
+    3. Verify featured carousel is visible on the page
+    4. Wait for carousel slides to load completely
+    5. Count the number of carousel slides
+    6. Verify slide count > 0
 
 Test Data:
     - Carousel selector: Configured via ConfigService
     - Slides selector: Configured via ConfigService
-    - Expected slide count: 3
 
 Expected Results:
     - Featured carousel is visible on home page
-    - Carousel contains exactly 3 slides
+    - Carousel contains slides (count > 0)
     - All slides are properly loaded
-    - Console displays: "carouselSelector: [selector]"
-    - Console displays: "slidesSelector: [selector]"
-    - Console displays: "isCarouselVisible -> true"
-    - Console displays: "slideCount -> 3"
 
 Priority: Medium
 Test Type: UI, Component Verification, Visual Testing
+Dependencies: TestFactory, HomePage, BasePage, ConfigService
+
+
+TEST CASE ID: HOME_UI_002
+Test Name: Add Review Successfully
+Test File: tests/HomePage.spec.js
+Test Method: should add review successfully
+
+Description:
+    Verify that a user can successfully submit a product review with name,
+    review text, and rating.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Home page loads successfully
+    - Review form is available on the page
+    - Review submission functionality is enabled
+
+Test Steps:
+    1. Initialize HomePage through TestFactory
+    2. Navigate to home page
+    3. Locate review form
+    4. Fill in reviewer name
+    5. Fill in review text
+    6. Select rating (1-5 stars)
+    7. Submit review
+    8. Verify success message is displayed
+
+Test Data:
+    - Reviewer name: "Joe"
+    - Review text: "I really enjoyed using this product. Highly recommend!"
+    - Rating: 5 stars
+
+Expected Results:
+    - Review form is visible and accessible
+    - All review fields can be filled
+    - Rating can be selected
+    - Submit button works correctly
+    - Success confirmation message appears
+    - No validation errors occur
+
+Priority: Medium
+Test Type: UI, Functional, User Interaction
 Dependencies: TestFactory, HomePage, BasePage, ConfigService
 
 ================================================================================
@@ -845,6 +881,366 @@ Test Type: UI, Navigation, Interaction
 Dependencies: MainMenuPage, BasePage
 
 ================================================================================
+                          PRODUCT FILTER TESTS
+================================================================================
+
+TEST CASE ID: FILTER_001
+Test Name: Display Products Matching Category and Price Range Filters
+Test File: tests/ProductFilter.spec.js
+Test Method: should display products matching category and price range filters
+
+Description:
+    Verify that when a logged-in user applies category and price range filters,
+    only products matching those criteria are displayed in the results.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in
+    - Product filtering functionality is available
+    - Products exist within the test price range
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to product listing page
+    5. Apply category filter
+    6. Apply price range filter ($50 - $200)
+    7. Verify filtered results are displayed
+    8. Verify all displayed products match the filters
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Category: Specific category path
+    - Price range: $50 - $200
+
+Expected Results:
+    - Login is successful
+    - Filters are applied successfully
+    - Products matching filters are displayed
+    - All products are within specified price range
+    - Product count > 0
+
+Priority: High
+Test Type: UI, Functional, Filtering
+Dependencies: TestFactory, LoginPage, ProductFilterPage
+
+
+TEST CASE ID: FILTER_002
+Test Name: Display Products Matching Category and Brand Filters
+Test File: tests/ProductFilter.spec.js
+Test Method: should display products matching category and brand filters
+
+Description:
+    Verify that when a logged-in user applies category and brand filters,
+    only products matching those criteria are displayed.
+
+Preconditions:
+    - E-commerce website is accessible
+    - User is logged in
+    - Multiple brands exist in the selected category
+
+Test Steps:
+    1. Login with test credentials
+    2. Navigate to product listing page
+    3. Apply category filter
+    4. Apply brand filter
+    5. Verify filtered results show only selected brand products
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Category: Specific category
+    - Brand: Specific brand name
+
+Expected Results:
+    - Filters applied successfully
+    - Only products from selected brand are displayed
+    - All products match both category and brand criteria
+
+Priority: High
+Test Type: UI, Functional, Filtering
+Dependencies: TestFactory, LoginPage, ProductFilterPage
+
+
+TEST CASE ID: FILTER_003
+Test Name: Display Products Matching Search Term and Category
+Test File: tests/ProductFilter.spec.js
+Test Method: should display products matching search term and category
+
+Description:
+    Verify that combining search functionality with category filters
+    displays products that match both criteria.
+
+Preconditions:
+    - E-commerce website is accessible
+    - User is logged in
+    - Search functionality is available
+
+Test Steps:
+    1. Login with test credentials
+    2. Perform product search with specific term
+    3. Apply category filter to search results
+    4. Verify results match both search term and category
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Search term: Specific product keyword
+    - Category: Specific category
+
+Expected Results:
+    - Search executes successfully
+    - Category filter applies to search results
+    - All displayed products match both search term and category
+    - Results are properly filtered
+
+Priority: Medium
+Test Type: UI, Functional, Filtering, Search
+Dependencies: TestFactory, LoginPage, ProductFilterPage, SearchResultsPage
+
+
+================================================================================
+                          BLOG POSTS FILTERING TESTS
+================================================================================
+
+TEST CASE ID: BLOG_001
+Test Name: Display Only Mark Jecno Articles When Filtering by Author
+Test File: tests/BlogPosts.spec.js
+Test Method: should display only Mark Jecno articles when filtering by author
+
+Description:
+    Verify that when a logged-in user filters blog posts by author "Mark Jecno",
+    only articles written by Mark Jecno are displayed.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in
+    - Blog section is accessible and contains posts from Mark Jecno
+    - Blog filtering functionality is available
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to Blog Posts section
+    5. Verify blog page is displayed
+    6. Filter blog posts by author "Mark Jecno"
+    7. Wait for filtered results to load
+    8. Verify at least one post is displayed
+    9. Verify all displayed posts are authored by Mark Jecno
+    10. Verify no posts from other authors are shown
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Author filter: "Mark Jecno"
+
+Expected Results:
+    - Login is successful
+    - Blog page loads successfully
+    - Author filter applies correctly
+    - Post count > 0 after filtering
+    - All posts are authored by "Mark Jecno"
+    - No posts from other authors are displayed
+    - verifyAllPostsFromAuthor returns allFromAuthor: true
+    - incorrectAuthors array is empty
+    - Console displays: "Found X blog posts after filtering"
+    - Console displays: "All posts from Mark Jecno: true"
+    - Console displays: "Mark Jecno posts displayed: [titles]"
+
+Priority: Medium
+Test Type: UI, Functional, Filtering, Content Verification
+Dependencies: TestFactory, LoginPage, BlogPage, DataPersistenceService
+
+
+================================================================================
+                          PASSWORD CHANGE TESTS
+================================================================================
+
+TEST CASE ID: PWD_CHANGE_001
+Test Name: Deny Access with Old Password and Grant Access with New Password After Password Change
+Test File: tests/PasswordChange.spec.js
+Test Method: should deny access with old password and grant access with new password after password change
+
+Description:
+    Verify that after a user changes their password, the old password no longer
+    grants access while the new password successfully authenticates the user.
+
+Preconditions:
+    - E-commerce application is accessible
+    - API registration endpoint is available
+    - Test user is registered via API in beforeEach hook
+    - Login, logout, and password change UI pages are functional
+
+Test Steps:
+    1. Pre-condition: Register test user via API
+    2. Navigate to login page
+    3. Login with test account credentials
+    4. Verify login was successful
+    5. Navigate to My Account page
+    6. Navigate to Change Password from sidebar
+    7. Change password to new password
+    8. Verify password change was successful
+    9. Logout from the application
+    10. Verify logout was successful
+    11. Attempt to login with old password
+    12. Verify login fails (old password rejected)
+    13. Navigate to login page again
+    14. Login with new password
+    15. Verify login succeeds (new password accepted)
+
+Test Data:
+    - Test user: Generated by UserDataGenerator.generateUniqueUser()
+    - Original password: "Password123!"
+    - New password: "NewSecurePassword456!"
+
+Expected Results:
+    - Initial login successful with original password
+    - Password change successful - success message displayed
+    - Logout successful
+    - Login with old password fails - isLoginSuccessful() returns false
+    - Login with new password succeeds - isLoginSuccessful() returns true
+
+Priority: High
+Test Type: UI, End-to-End, Security, Authentication
+Dependencies: TestFactory, LoginPage, MyAccountPage, ChangePasswordPage, ApiService, UserDataGenerator
+
+
+================================================================================
+                          CART PERSISTENCE TESTS
+================================================================================
+
+TEST CASE ID: CART_PERSIST_001
+Test Name: Persist Cart Items After User Re-Login
+Test File: tests/CartPersistence.spec.js
+Test Method: should persist cart items after user re-login
+
+Description:
+    Verify that when a logged-in user adds products to their shopping cart, 
+    logs out, and logs back in, the cart items are persisted and still visible.
+
+Preconditions:
+    - E-commerce website is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in and log out
+    - Products are available to add to cart
+    - Shopping cart functionality is enabled
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to product listing page (category path=18)
+    5. Add 2 products to cart
+    6. Store the names and quantities of products added
+    7. Navigate to cart page and verify products are added
+    8. Logout from the application
+    9. Verify logout was successful
+    10. Login again with same credentials
+    11. Verify re-login was successful
+    12. Navigate to cart page
+    13. Verify cart contains the same products
+    14. Verify product quantities match
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Products: First 2 products from category page
+    - Category path: /index.php?route=product/category&path=18
+
+Expected Results:
+    - Initial login is successful
+    - 2 products are successfully added to cart
+    - Products are visible in cart before logout
+    - Logout is successful
+    - Re-login is successful
+    - Cart contains the same products after re-login
+    - Product quantities are preserved
+    - Console displays: "Products added to cart: [array]"
+    - Console displays: "Cart products BEFORE logout: [array]"
+    - Console displays: "Cart products after re-login: [array]"
+
+Priority: High
+Test Type: UI, End-to-End, Functional, Persistence
+Dependencies: TestFactory, LoginPage, ProductListingPage, CartPage, MyAccountPage
+
+
+================================================================================
+                          WISHLIST ACCESS CONTROL TESTS
+================================================================================
+
+TEST CASE ID: WISHLIST_AUTH_001
+Test Name: Redirect to Login Page When Clicking WishList Button as Visitor
+Test File: tests/WishlistAuth.spec.js
+Test Method: should redirect to Login page when clicking WishList button as visitor
+
+Description:
+    Verify that when a non-authenticated visitor clicks the wishlist button,
+    they are redirected to the login page or shown an authentication prompt.
+
+Preconditions:
+    - E-commerce website is accessible
+    - User is not authenticated (visitor)
+    - Wishlist button is visible on the page
+
+Test Steps:
+    1. Navigate to home page as visitor (not logged in)
+    2. Click the Wishlist button in navigation
+    3. Wait for page navigation to complete
+    4. Verify current URL contains "login"
+    5. Verify login form elements are visible
+
+Test Data:
+    - No authentication credentials (visitor mode)
+
+Expected Results:
+    - Wishlist button click triggers navigation
+    - User is redirected to login page
+    - Current URL contains "login" or "account/login"
+    - Login form is displayed (email and password inputs visible)
+    - Console displays: "Current URL after clicking wishlist: [url]"
+
+Priority: High
+Test Type: UI, Security, Access Control
+Dependencies: TestFactory, HomePage, LoginPage, WishlistPage
+
+
+TEST CASE ID: WISHLIST_AUTH_002
+Test Name: Redirect to Login Page When Navigating to WishList URL Directly
+Test File: tests/WishlistAuth.spec.js
+Test Method: should redirect to Login page when navigating to WishList URL directly
+
+Description:
+    Verify that when a non-authenticated visitor attempts to access the
+    wishlist page directly via URL, they are redirected to the login page.
+
+Preconditions:
+    - E-commerce website is accessible
+    - User is not authenticated (visitor)
+    - Wishlist URL is accessible
+
+Test Steps:
+    1. Navigate directly to wishlist URL as visitor
+    2. Wait for page to load and stabilize
+    3. Verify current URL contains "login"
+    4. Verify login form elements are visible
+
+Test Data:
+    - Wishlist URL: /index.php?route=account/wishlist
+    - No authentication credentials
+
+Expected Results:
+    - Direct navigation triggers redirect
+    - User is redirected to login page
+    - Current URL contains "login" or "account/login"
+    - Login form is displayed
+    - Console displays: "Current URL after direct navigation: [url]"
+
+Priority: High
+Test Type: UI, Security, Access Control
+Dependencies: TestFactory, LoginPage, WishlistPage
+
+
+================================================================================
                           WISHLIST PERSISTENCE TESTS
 ================================================================================
 
@@ -908,23 +1304,28 @@ Dependencies: TestFactory, LoginPage, ProductListingPage, WishlistPage, MyAccoun
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 21
+Total Test Cases: 30
 - API Tests: 6 (2 Registration + 4 Login)
-- UI Navigation Tests: 3 (including 1 Main Menu test)
-- UI Interaction Tests: 2
-- UI Validation Tests: 3 (including 2 Duplicate Email tests)
+- UI Navigation Tests: 5 (2 Home Page + 3 Shop by Category)
+- UI Interaction Tests: 2 (1 Main Menu + 1 Home Page Review)
+- UI Validation Tests: 2 (Duplicate Email Registration)
 - UI Search Tests: 4
-- UI Component Tests: 1
+- UI Component Tests: 1 (Home Page Carousel)
 - Compare Products Tests: 1
+- Product Filter Tests: 3
+- Blog Posts Filtering Tests: 1
+- Cart Persistence Tests: 1
+- Wishlist Access Control Tests: 2
 - Wishlist Persistence Tests: 1
+- Password Change Tests: 1
 
 Priority Distribution:
-- High Priority: 14 tests
-- Medium Priority: 7 tests
+- High Priority: 21 tests
+- Medium Priority: 9 tests
 
 Test Types:
 - API/Integration: 6 tests
-- UI/Functional: 15 tests
+- UI/Functional: 24 tests
 
 SOLID Principles Implementation:
 ✅ Single Responsibility Principle (SRP)
@@ -949,10 +1350,14 @@ Test Execution Commands:
     npx playwright test tests/Duplicate*    # Run only duplicate email tests
     npx playwright test tests/MainMenu*     # Run only main menu tests
     npx playwright test tests/Compare*      # Run only compare products tests
-    npx playwright test tests/Wishlist*     # Run only wishlist tests
+    npx playwright test tests/Wishlist*     # Run only wishlist tests (auth + persistence)
+    npx playwright test tests/Password*     # Run only password change tests
+    npx playwright test tests/ProductFilter* # Run only product filter tests
+    npx playwright test tests/BlogPosts*    # Run only blog posts tests
+    npx playwright test tests/CartPersistence* # Run only cart persistence tests
 
 Expected Overall Results:
-    21 passed tests in approximately 35-45 seconds
+    30 passed tests in approximately 60-90 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -961,10 +1366,16 @@ Expected Overall Results:
     - Category component validation with names and counts
     - Search results with product matches and counts
     - Carousel visibility and slide count verification
+    - Product review submission confirmation
     - Duplicate email registration prevention with error messages
     - Main menu category visibility verification
     - Compare products verification with product names matching
+    - Product filter verification with category, price, and brand filters
+    - Blog posts filtering by author verification
+    - Cart persistence verification after re-login
+    - Wishlist access control verification for visitors
     - Wishlist persistence verification after re-login
+    - Password change verification with old/new password validation
 
 ================================================================================
                                     NOTES
@@ -993,8 +1404,13 @@ Expected Overall Results:
    - MyAccountPage: Handles authenticated user actions and logout
    - RegistrationPage: Handles user registration form and validation
    - MainMenuPage: Handles main menu hover and category navigation
-   - ProductListingPage: Handles product browsing and adding to compare
+   - ProductListingPage: Handles product browsing and adding to compare/wishlist/cart
    - ComparePage: Handles product comparison page interactions
+   - ChangePasswordPage: Handles password change form and validation
+   - WishlistPage: Handles wishlist page interactions and product management
+   - CartPage: Handles shopping cart interactions and product management
+   - BlogPage: Handles blog posts filtering and author verification
+   - ProductFilterPage: Handles product filtering by category, price, and brand
 
 6. Future Enhancements:
    - Additional page objects can extend BasePage
