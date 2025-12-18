@@ -32,19 +32,25 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── SearchResultsPage.js         # Search functionality
 │   ├── ShopByCategoryPage.js        # Category page interactions
 │   ├── ProductListingPage.js        # Product browsing & compare
-│   └── ComparePage.js               # Compare products functionality
+│   ├── ComparePage.js               # Compare products functionality
+│   ├── ChangePasswordPage.js        # Password change functionality
+│   ├── CartPage.js                  # Shopping cart interactions
+│   └── BlogPage.js                  # Blog posts filtering
 └── 📁 tests/                        # Test specification files
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
+    ├── BlogPosts.spec.js            # Blog posts filtering tests
+    ├── CartPersistence.spec.js      # Cart persistence after re-login
     ├── CompareProducts.spec.js      # Compare products tests
-    ├── WishlistAuth.spec.js         # Wishlist authentication tests
-    ├── WishlistPersistence.spec.js  # Wishlist persistence after re-login
-    ├── ProductFilter.spec.js        # Product filtering tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
     ├── HomePage.spec.js             # Homepage UI tests
     ├── MainMenu.spec.js             # Main menu tests
+    ├── PasswordChange.spec.js       # Password change tests
+    ├── ProductFilter.spec.js        # Product filtering tests
     ├── Search.spec.js               # Search functionality tests
     ├── ShopByCategoryPage.spec.js   # Category page tests
+    ├── WishlistAuth.spec.js         # Wishlist authentication tests
+    ├── WishlistPersistence.spec.js  # Wishlist persistence after re-login
     └── test-user.json               # Test data
 ```
 
@@ -69,6 +75,9 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **ComparePage**: Product comparison page interactions
 - **WishlistPage**: Wishlist specific interactions
 - **ProductFilterPage**: Product filtering interactions
+- **ChangePasswordPage**: Password change form and validation
+- **CartPage**: Shopping cart management and persistence
+- **BlogPage**: Blog posts filtering and author verification
 
 ### Factories Layer (`/.github/factories/`)
 - **TestFactory**: Dependency injection and object creation for all Page Objects and Services
@@ -145,16 +154,19 @@ test.beforeEach(async ({ page }) => {
 
 ### Test Coverage
 
-The test suite includes:
-- **API Tests**: User registration and login functionality
-- **Navigation Tests**: Home page and category page navigation
-- **Search Tests**: Product search functionality and result validation
-- **Filter Tests**: Product filtering with multiple filter combinations
-- **Component Tests**: UI component verification (carousels, categories, menus)
+The test suite includes **30 automated tests**:
+- **API Tests (6)**: User registration and login functionality
+- **Navigation Tests (5)**: Home page and category page navigation
+- **Search Tests (4)**: Product search functionality and result validation
+- **Filter Tests (3)**: Product filtering with multiple filter combinations (category, price, brand)
+- **Component Tests (2)**: UI component verification (carousels, categories, menus, reviews)
 - **Authentication Tests**: Login, logout, and registration UI flows
-- **Validation Tests**: Duplicate email registration prevention
-- **Compare Tests**: Product comparison functionality with verification
-- **Wishlist Tests**: Wishlist persistence after re-login
+- **Validation Tests (2)**: Duplicate email registration prevention
+- **Compare Tests (1)**: Product comparison functionality with verification
+- **Wishlist Tests (3)**: Access control for visitors and persistence after re-login
+- **Password Change Tests (1)**: Password update with old/new password validation
+- **Cart Persistence Tests (1)**: Shopping cart persistence after re-login
+- **Blog Filtering Tests (1)**: Blog posts filtering by author
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration

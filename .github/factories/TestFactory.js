@@ -6,6 +6,7 @@ const { MyAccountPage } = require('../../pages/MyAccountPage');
 const { RegistrationPage } = require('../../pages/RegistrationPage');
 const { ProductListingPage } = require('../../pages/ProductListingPage');
 const { ComparePage } = require('../../pages/ComparePage');
+const { ChangePasswordPage } = require('../../pages/ChangePasswordPage');
 const { ConfigService } = require('../../services/ConfigService');
 const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
@@ -92,6 +93,15 @@ class TestFactory {
      */
     createComparePage(page) {
         return new ComparePage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a ChangePasswordPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {ChangePasswordPage}
+     */
+    createChangePasswordPage(page) {
+        return new ChangePasswordPage(page, this.baseUrl);
     }
 
     /**
