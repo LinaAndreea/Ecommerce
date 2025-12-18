@@ -1301,10 +1301,71 @@ Dependencies: TestFactory, LoginPage, ProductListingPage, WishlistPage, MyAccoun
 
 
 ================================================================================
+                          AFFILIATE TRACKING TESTS
+================================================================================
+
+TEST CASE ID: AFFILIATE_001
+Test Name: Display Product When Accessed With Affiliate Tracking Code
+Test File: tests/AffiliateTracking.spec.js
+Test Method: should display product when accessed with affiliate tracking code
+
+Description:
+    Verify that when a logged-in user with affiliate privileges retrieves their
+    tracking code and applies it to a product URL, the product displays correctly
+    with the tracking parameter maintained in the URL.
+
+Preconditions:
+    - E-commerce application is accessible
+    - Test user credentials exist in test-user.json
+    - User has affiliate privileges or can access affiliate tracking
+    - Affiliate tracking functionality is enabled
+    - Products are available in the catalog
+
+Test Steps:
+    1. Load test user credentials from test-user.json
+    2. Navigate to login page and login with test credentials
+    3. Verify login was successful
+    4. Navigate to My Account page
+    5. Verify My Account contains affiliate company information
+    6. Open affiliate tracking section
+    7. Retrieve tracking code from affiliate tracking page
+    8. Get any available product URL from catalog
+    9. Apply tracking code to product URL (append tracking parameter)
+    10. Navigate to product using the tracked URL
+    11. Verify product page is displayed successfully
+    12. Verify product name is visible
+    13. Verify tracking code is present in URL
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Tracking code: Retrieved dynamically from affiliate tracking page
+    - Product URL: Retrieved dynamically from product catalog
+    - Expected URL format: /product/product&product_id=XX&tracking=CODE
+
+Expected Results:
+    - Login is successful
+    - My Account page loads successfully
+    - Affiliate information is available in sidebar
+    - Affiliate tracking page is accessible
+    - Tracking code is retrieved successfully (not empty)
+    - Product URL is obtained successfully
+    - Tracked URL is constructed with tracking parameter
+    - Product page loads successfully with tracked URL
+    - Product title is displayed (length > 0)
+    - Tracking parameter persists in URL
+    - Console displays step-by-step verification with ✅ markers
+    - Console displays: "=== Test Summary ===" with all steps verified
+
+Priority: High
+Test Type: UI, End-to-End, Functional, Affiliate Tracking
+Dependencies: TestFactory, LoginPage, MyAccountPage, AffiliateTrackingPage
+
+
+================================================================================
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 30
+Total Test Cases: 31
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 5 (2 Home Page + 3 Shop by Category)
 - UI Interaction Tests: 2 (1 Main Menu + 1 Home Page Review)
@@ -1318,14 +1379,15 @@ Total Test Cases: 30
 - Wishlist Access Control Tests: 2
 - Wishlist Persistence Tests: 1
 - Password Change Tests: 1
+- Affiliate Tracking Tests: 1
 
 Priority Distribution:
-- High Priority: 21 tests
+- High Priority: 22 tests
 - Medium Priority: 9 tests
 
 Test Types:
 - API/Integration: 6 tests
-- UI/Functional: 24 tests
+- UI/Functional: 25 tests
 
 SOLID Principles Implementation:
 ✅ Single Responsibility Principle (SRP)
@@ -1355,9 +1417,10 @@ Test Execution Commands:
     npx playwright test tests/ProductFilter* # Run only product filter tests
     npx playwright test tests/BlogPosts*    # Run only blog posts tests
     npx playwright test tests/CartPersistence* # Run only cart persistence tests
+    npx playwright test tests/AffiliateTracking* # Run only affiliate tracking tests
 
 Expected Overall Results:
-    30 passed tests in approximately 60-90 seconds
+    31 passed tests in approximately 60-90 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -1376,6 +1439,7 @@ Expected Overall Results:
     - Wishlist access control verification for visitors
     - Wishlist persistence verification after re-login
     - Password change verification with old/new password validation
+    - Affiliate tracking code application and product display verification
 
 ================================================================================
                                     NOTES
@@ -1411,6 +1475,7 @@ Expected Overall Results:
    - CartPage: Handles shopping cart interactions and product management
    - BlogPage: Handles blog posts filtering and author verification
    - ProductFilterPage: Handles product filtering by category, price, and brand
+   - AffiliateTrackingPage: Handles affiliate tracking code retrieval and product URL tracking
 
 6. Future Enhancements:
    - Additional page objects can extend BasePage
