@@ -36,6 +36,8 @@ test.describe('Affiliate Tracking Feature:', () => {
     let affiliateRegistrationPage;
     let testFactory;
     let baseUrl;
+
+    
     let testUser;
 
     test.beforeEach(async ({ page }) => {

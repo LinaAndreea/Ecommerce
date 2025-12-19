@@ -36,11 +36,14 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── ChangePasswordPage.js        # Password change functionality
 │   ├── CartPage.js                  # Shopping cart interactions
 │   ├── BlogPage.js                  # Blog posts filtering
+│   ├── EditAccountPage.js           # Account information editing
+│   ├── EditAddressPage.js           # Address book management
 │   └── AffiliateTrackingPage.js     # Affiliate tracking functionality
 └── 📁 tests/                        # Test specification files
+    ├── AccountInformationUpdate.spec.js  # Account info & address update
+    ├── AffiliateTracking.spec.js    # Affiliate tracking tests
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
-    ├── AffiliateTracking.spec.js    # Affiliate tracking tests
     ├── BlogPosts.spec.js            # Blog posts filtering tests
     ├── CartPersistence.spec.js      # Cart persistence after re-login
     ├── CompareProducts.spec.js      # Compare products tests
@@ -49,6 +52,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
     ├── MainMenu.spec.js             # Main menu tests
     ├── PasswordChange.spec.js       # Password change tests
     ├── ProductFilter.spec.js        # Product filtering tests
+    ├── ProductImageGallery.spec.js  # Product image gallery tests
     ├── Search.spec.js               # Search functionality tests
     ├── ShopByCategoryPage.spec.js   # Category page tests
     ├── WishlistAuth.spec.js         # Wishlist authentication tests
@@ -80,6 +84,8 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **ChangePasswordPage**: Password change form and validation
 - **CartPage**: Shopping cart management and persistence
 - **BlogPage**: Blog posts filtering and author verification
+- **EditAccountPage**: Account information editing (name, email, telephone)
+- **EditAddressPage**: Address book management with create/edit functionality
 - **AffiliateTrackingPage**: Affiliate tracking code retrieval and product URL tracking
 
 ### Factories Layer (`/.github/factories/`)
@@ -157,7 +163,7 @@ test.beforeEach(async ({ page }) => {
 
 ### Test Coverage
 
-The test suite includes **31 automated tests**:
+The test suite includes **32 automated tests**:
 - **API Tests (6)**: User registration and login functionality
 - **Navigation Tests (5)**: Home page and category page navigation
 - **Search Tests (4)**: Product search functionality and result validation
@@ -170,6 +176,7 @@ The test suite includes **31 automated tests**:
 - **Password Change Tests (1)**: Password update with old/new password validation
 - **Cart Persistence Tests (1)**: Shopping cart persistence after re-login
 - **Blog Filtering Tests (1)**: Blog posts filtering by author
+- **Account Information Update Tests (1)**: Account and address updates with persistence verification
 - **Affiliate Tracking Tests (1)**: Tracking code application and product display with tracking
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
