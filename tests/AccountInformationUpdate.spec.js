@@ -3,9 +3,8 @@ const { LoginPage } = require('../pages/LoginPage');
 const { MyAccountPage } = require('../pages/MyAccountPage');
 const { EditAccountPage } = require('../pages/EditAccountPage');
 const { EditAddressPage } = require('../pages/EditAddressPage');
+const { TestFactory } = require('../.github/factories/TestFactory');
 const { UserDataGenerator } = require('../services/UserDataGenerator');
-const fs = require('fs');
-const path = require('path');
 
 /**
  * Account Information Update Tests - Following SOLID principles:
@@ -23,31 +22,32 @@ test.describe('Account Information Update Feature:', () => {
     let myAccountPage;
     let editAccountPage;
     let editAddressPage;
-    let testUser;
+    let testFactory;
     let baseUrl;
+    let testUser;
     let updatedAccountData;
     let updatedAddressData;
     let addressToVerify;
 
     test.beforeEach(async ({ page }) => {
+        // Initialize factory and services
+        testFactory = new TestFactory();
+        const configService = testFactory.getConfigService();
+        const dataPersistenceService = testFactory.getDataPersistenceService();
+        baseUrl = configService.get('baseURL');
+
         // Load existing test user from file
-        const testUserPath = path.join(__dirname, 'test-user.json');
-        
         try {
-            if (fs.existsSync(testUserPath)) {
-                testUser = JSON.parse(fs.readFileSync(testUserPath, 'utf-8'));
-                console.log('✅ Loaded test user from file:', testUser.email);
-            } else {
+            testUser = dataPersistenceService.loadUserCredentials();
+            if (!testUser) {
                 throw new Error('test-user.json not found. Please run registration tests first.');
             }
+            console.log('✅ Loaded test user from file:', testUser.email);
         } catch (error) {
             console.log('⚠️ Could not load test user:', error.message);
             test.skip();
             return;
         }
-
-        // Get base URL from environment
-        baseUrl = process.env.BASE_URL || 'https://ecommerce-playground.lambdatest.io';
 
         // Initialize Page Objects
         loginPage = new LoginPage(page, baseUrl);
