@@ -35,10 +35,12 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── ComparePage.js               # Compare products functionality
 │   ├── ChangePasswordPage.js        # Password change functionality
 │   ├── CartPage.js                  # Shopping cart interactions
-│   └── BlogPage.js                  # Blog posts filtering
+│   ├── BlogPage.js                  # Blog posts filtering
+│   └── AffiliateTrackingPage.js     # Affiliate tracking functionality
 └── 📁 tests/                        # Test specification files
     ├── ApiLogin.spec.js             # API login tests
     ├── ApiRegister.spec.js          # API registration tests
+    ├── AffiliateTracking.spec.js    # Affiliate tracking tests
     ├── BlogPosts.spec.js            # Blog posts filtering tests
     ├── CartPersistence.spec.js      # Cart persistence after re-login
     ├── CompareProducts.spec.js      # Compare products tests
@@ -78,6 +80,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **ChangePasswordPage**: Password change form and validation
 - **CartPage**: Shopping cart management and persistence
 - **BlogPage**: Blog posts filtering and author verification
+- **AffiliateTrackingPage**: Affiliate tracking code retrieval and product URL tracking
 
 ### Factories Layer (`/.github/factories/`)
 - **TestFactory**: Dependency injection and object creation for all Page Objects and Services
@@ -154,7 +157,7 @@ test.beforeEach(async ({ page }) => {
 
 ### Test Coverage
 
-The test suite includes **30 automated tests**:
+The test suite includes **31 automated tests**:
 - **API Tests (6)**: User registration and login functionality
 - **Navigation Tests (5)**: Home page and category page navigation
 - **Search Tests (4)**: Product search functionality and result validation
@@ -167,6 +170,7 @@ The test suite includes **30 automated tests**:
 - **Password Change Tests (1)**: Password update with old/new password validation
 - **Cart Persistence Tests (1)**: Shopping cart persistence after re-login
 - **Blog Filtering Tests (1)**: Blog posts filtering by author
+- **Affiliate Tracking Tests (1)**: Tracking code application and product display with tracking
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration

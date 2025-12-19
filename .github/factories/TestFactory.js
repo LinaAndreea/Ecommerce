@@ -7,6 +7,8 @@ const { RegistrationPage } = require('../../pages/RegistrationPage');
 const { ProductListingPage } = require('../../pages/ProductListingPage');
 const { ComparePage } = require('../../pages/ComparePage');
 const { ChangePasswordPage } = require('../../pages/ChangePasswordPage');
+const { AffiliateTrackingPage } = require('../../pages/AffiliateTrackingPage');
+const { AffiliateRegistrationPage } = require('../../pages/AffiliateRegistrationPage');
 const { ConfigService } = require('../../services/ConfigService');
 const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
@@ -102,6 +104,24 @@ class TestFactory {
      */
     createChangePasswordPage(page) {
         return new ChangePasswordPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates an AffiliateTrackingPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {AffiliateTrackingPage}
+     */
+    createAffiliateTrackingPage(page) {
+        return new AffiliateTrackingPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates an AffiliateRegistrationPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {AffiliateRegistrationPage}
+     */
+    createAffiliateRegistrationPage(page) {
+        return new AffiliateRegistrationPage(page, this.baseUrl);
     }
 
     /**
