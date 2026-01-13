@@ -272,8 +272,8 @@ test.describe('Returns Management - Complete E2E Flow:', () => {
         
         try {
             await orderDetailsPage.returnItem(0, {
-                reason: '1',
-                comment: 'Changed my mind'
+                reason: '5', // Received Wrong Item
+                comment: 'Changed my mind - received wrong item'
             });
             console.log('✅ Return initiated');
         } catch (error) {

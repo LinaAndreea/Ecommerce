@@ -23,8 +23,8 @@ class OrderDetailsPage extends BasePage {
         this.returnButtons = page.locator('a:has-text("Return"), button:has-text("Return"), a[href*="return"]');
         this.returnProductLinks = page.locator('a[href*="account/return/add"]');
 
-        // Return form elements
-        this.returnReasonSelect = page.locator('select[name="return_reason_id"]').first();
+        // Return form elements (radio buttons for return reason)
+        this.returnReasonRadios = page.locator('input[name="return_reason_id"]');
         this.returnCommentTextarea = page.locator('textarea[name="comment"]').first();
         this.returnSubmitButton = page.locator('input[value="Submit"], button:has-text("Submit")').first();
         
@@ -232,17 +232,22 @@ class OrderDetailsPage extends BasePage {
      * @returns {Promise<OrderDetailsPage>}
      */
     async fillReturnForm(returnData = {}) {
-        // Select return reason
-        if (returnData.reason) {
-            await this.returnReasonSelect.selectOption(returnData.reason);
-        } else {
-            // Select first available reason
-            await this.returnReasonSelect.selectOption({ index: 1 });
-        }
+        // Select return reason (radio button)
+        const reasonIndex = returnData.reason ? parseInt(returnData.reason) - 1 : 0;
+        
+        // Wait for radio buttons to be available
+        await this.page.waitForSelector('input[name="return_reason_id"]', { state: 'visible', timeout: 5000 });
+        
+        // Select the radio button by index
+        const radioButton = this.returnReasonRadios.nth(reasonIndex);
+        await radioButton.check();
+        
+        console.log(`  ✓ Selected return reason ${reasonIndex + 1}`);
 
         // Fill comment if provided
         if (returnData.comment) {
             await this.returnCommentTextarea.fill(returnData.comment);
+            console.log(`  ✓ Added comment: "${returnData.comment}"`);
         }
 
         return this;
