@@ -226,6 +226,30 @@ class ProductPage extends BasePage {
             return false;
         }
     }
+
+    /**
+     * Adds product to cart
+     * @returns {Promise<ProductPage>}
+     */
+    async addToCart() {
+        await this.waitForElement(this.addToCartButton, 'visible', 5000);
+        await this.addToCartButton.click();
+        await this.page.waitForLoadState('networkidle');
+        return this;
+    }
+
+    /**
+     * Verifies success message is displayed after adding to cart
+     * @returns {Promise<boolean>}
+     */
+    async isAddedToCartSuccessfully() {
+        try {
+            await this.waitForElement(this.successAlert, 'visible', 5000);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }
 
 module.exports = { ProductPage };

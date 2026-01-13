@@ -26,6 +26,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── LoginPage.js                 # Login page interactions
 │   ├── WishlistPage.js              # Wishlist page interactions
 │   ├── ProductFilterPage.js         # Product filtering interactions
+│   ├── ProductPage.js               # Individual product page interactions
 │   ├── MainMenuPage.js              # Main menu navigation
 │   ├── MyAccountPage.js             # Account & logout interactions
 │   ├── RegistrationPage.js          # User registration interactions
@@ -34,7 +35,10 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── ProductListingPage.js        # Product browsing & compare
 │   ├── ComparePage.js               # Compare products functionality
 │   ├── ChangePasswordPage.js        # Password change functionality
-│   ├── CartPage.js                  # Shopping cart interactions
+│   ├── CartPage.js                  # Shopping cart interactions & cart clearing
+│   ├── CheckoutPage.js              # Checkout process handling
+│   ├── OrderDetailsPage.js          # Order viewing & return initiation
+│   ├── ReturnsPage.js               # Returns page verification
 │   ├── BlogPage.js                  # Blog posts filtering
 │   ├── EditAccountPage.js           # Account information editing
 │   ├── EditAddressPage.js           # Address book management
@@ -53,6 +57,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
     ├── PasswordChange.spec.js       # Password change tests
     ├── ProductFilter.spec.js        # Product filtering tests
     ├── ProductImageGallery.spec.js  # Product image gallery tests
+    ├── Returns.spec.js              # Complete returns flow E2E test
     ├── Search.spec.js               # Search functionality tests
     ├── ShopByCategoryPage.spec.js   # Category page tests
     ├── WishlistAuth.spec.js         # Wishlist authentication tests
@@ -87,6 +92,10 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **EditAccountPage**: Account information editing (name, email, telephone)
 - **EditAddressPage**: Address book management with create/edit functionality
 - **AffiliateTrackingPage**: Affiliate tracking code retrieval and product URL tracking
+- **ProductPage**: Individual product interactions including add to cart
+- **CheckoutPage**: Multi-step checkout process handling
+- **OrderDetailsPage**: Order history viewing and return initiation
+- **ReturnsPage**: Returns page verification and status checking
 
 ### Factories Layer (`/.github/factories/`)
 - **TestFactory**: Dependency injection and object creation for all Page Objects and Services
@@ -163,7 +172,7 @@ test.beforeEach(async ({ page }) => {
 
 ### Test Coverage
 
-The test suite includes **32 automated tests**:
+The test suite includes **33 automated tests**:
 - **API Tests (6)**: User registration and login functionality
 - **Navigation Tests (5)**: Home page and category page navigation
 - **Search Tests (4)**: Product search functionality and result validation
@@ -178,6 +187,7 @@ The test suite includes **32 automated tests**:
 - **Blog Filtering Tests (1)**: Blog posts filtering by author
 - **Account Information Update Tests (1)**: Account and address updates with persistence verification
 - **Affiliate Tracking Tests (1)**: Tracking code application and product display with tracking
+- **Returns Management Tests (1)**: Complete E2E returns flow - view order, initiate return, verify on Returns page
 - **Edge Case Tests**: Handling of no results, invalid data, empty inputs
 
 ### Extending Configuration

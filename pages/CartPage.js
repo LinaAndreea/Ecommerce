@@ -26,8 +26,16 @@ class CartPage extends BasePage {
         this.continueShoppingButton = page.locator('a:has-text("Continue Shopping")').first();
         this.checkoutButton = page.locator('a:has-text("Checkout")').first();
         
-        // Remove buttons
-        this.removeButtons = page.locator('button[data-original-title="Remove"], button[title="Remove"], td button').filter({ hasText: /remove/i });
+        // Remove buttons - multiple possible selectors
+        this.removeButtons = page.locator(
+            'button[data-original-title="Remove"], ' +
+            'button[title="Remove"], ' +
+            'button.btn-danger, ' +
+            'td button[onclick*="remove"], ' +
+            'a[onclick*="cart.remove"], ' +
+            'button:has(i.fa-times), ' +
+            'button:has(i.fa-trash)'
+        );
     }
 
     /**
@@ -155,8 +163,86 @@ class CartPage extends BasePage {
      * @returns {Promise<CartPage>}
      */
     async proceedToCheckout() {
-        await this.checkoutButton.click();
+        try {
+            // Try scrolling and clicking
+            await this.scrollIntoViewIfNeeded(this.checkoutButton);
+            await this.page.waitForTimeout(500);
+            await this.checkoutButton.click({ timeout: 5000 });
+        } catch (error) {
+            // Fallback: Navigate directly to checkout
+            console.log('Using fallback navigation to checkout');
+            await this.navigate('/index.php?route=checkout/checkout');
+        }
         await this.page.waitForLoadState('networkidle');
+        return this;
+    }
+
+    /**
+     * Clears all items from the cart
+     * @returns {Promise<CartPage>}
+     */
+    async clearCart() {
+        await this.navigateToCart();
+        
+        try {
+            // Check if cart is already empty
+            const isEmpty = await this.isCartEmpty();
+            if (isEmpty) {
+                console.log('Cart is already empty');
+                return this;
+            }
+            
+            // Remove all items one by one
+            let itemCount = await this.getCartItemCount();
+            console.log(`Clearing ${itemCount} items from cart...`);
+            
+            let attempts = 0;
+            const maxAttempts = 20;
+            
+            while (itemCount > 0 && attempts < maxAttempts) {
+                attempts++;
+                
+                try {
+                    // Find any remove button on the page
+                    const removeButton = this.page.locator(
+                        'button[data-original-title="Remove"], ' +
+                        'button[title="Remove"], ' +
+                        'button.btn-danger, ' +
+                        'button:has(i.fa-times), ' +
+                        'button:has(i.fa-trash), ' +
+                        'a[onclick*="cart.remove"]'
+                    ).first();
+                    
+                    const buttonCount = await removeButton.count();
+                    if (buttonCount === 0) {
+                        console.log('No remove button found, cart might be empty');
+                        break;
+                    }
+                    
+                    // Click the first remove button
+                    await removeButton.waitFor({ state: 'visible', timeout: 3000 });
+                    await removeButton.click();
+                    await this.page.waitForLoadState('networkidle');
+                    await this.page.waitForTimeout(500);
+                    
+                    // Check new count
+                    itemCount = await this.getCartItemCount();
+                } catch (error) {
+                    console.log(`Attempt ${attempts}: Could not remove item -`, error.message);
+                    break;
+                }
+            }
+            
+            const finalCount = await this.getCartItemCount();
+            if (finalCount === 0) {
+                console.log('✅ Cart cleared successfully');
+            } else {
+                console.log(`⚠️ Cart still has ${finalCount} items after cleanup`);
+            }
+        } catch (error) {
+            console.log('Error clearing cart:', error.message);
+        }
+        
         return this;
     }
 }

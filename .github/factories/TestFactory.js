@@ -9,6 +9,11 @@ const { ComparePage } = require('../../pages/ComparePage');
 const { ChangePasswordPage } = require('../../pages/ChangePasswordPage');
 const { AffiliateTrackingPage } = require('../../pages/AffiliateTrackingPage');
 const { AffiliateRegistrationPage } = require('../../pages/AffiliateRegistrationPage');
+const { CheckoutPage } = require('../../pages/CheckoutPage');
+const { OrderDetailsPage } = require('../../pages/OrderDetailsPage');
+const { ReturnsPage } = require('../../pages/ReturnsPage');
+const { CartPage } = require('../../pages/CartPage');
+const { ProductPage } = require('../../pages/ProductPage');
 const { ConfigService } = require('../../services/ConfigService');
 const { ApiService } = require('../../services/ApiService');
 const { DataPersistenceService } = require('../../services/DataPersistenceService');
@@ -122,6 +127,51 @@ class TestFactory {
      */
     createAffiliateRegistrationPage(page) {
         return new AffiliateRegistrationPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a CheckoutPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {CheckoutPage}
+     */
+    createCheckoutPage(page) {
+        return new CheckoutPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates an OrderDetailsPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {OrderDetailsPage}
+     */
+    createOrderDetailsPage(page) {
+        return new OrderDetailsPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a ReturnsPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {ReturnsPage}
+     */
+    createReturnsPage(page) {
+        return new ReturnsPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a CartPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {CartPage}
+     */
+    createCartPage(page) {
+        return new CartPage(page, this.baseUrl);
+    }
+
+    /**
+     * Creates a ProductPage instance
+     * @param {Page} page - Playwright page object
+     * @returns {ProductPage}
+     */
+    createProductPage(page) {
+        return new ProductPage(page, this.baseUrl);
     }
 
     /**

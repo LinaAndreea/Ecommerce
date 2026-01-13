@@ -1453,10 +1453,111 @@ Dependencies: TestFactory, LoginPage, MyAccountPage, AffiliateTrackingPage
 
 
 ================================================================================
+                     RETURNS MANAGEMENT TESTS (E2E)
+================================================================================
+
+TEST CASE ID: RETURNS_001
+Test Name: Complete Returns Flow from Product Selection to Returns Verification
+Test File: tests/Returns.spec.js
+Test Method: should complete full returns flow from product selection to returns verification
+
+Description:
+    Verify the complete end-to-end returns workflow: a logged-in user selects
+    multiple in-stock products, completes full checkout to place an order, views
+    the order details in order history, initiates a return for one product, and
+    verifies the return appears on the Returns page with correct status.
+
+Preconditions:
+    - E-commerce application is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in
+    - In-stock products are available (iPod Touch ID 87, iPod Shuffle ID 84)
+    - Full checkout functionality is available
+    - Order history and returns functionality is enabled
+    - Cart can be cleared before and after test
+
+Test Steps:
+    1. Pre-condition: Clear shopping cart to ensure clean test state
+    2. Load test user credentials from test-user.json
+    3. Navigate to login page and login with test credentials
+    4. Verify login was successful
+    5. Navigate to iPod Touch product page (ID 87) and add to cart
+    6. Navigate to iPod Shuffle product page (ID 84) and add to cart
+    7. Verify cart contains expected items (5 items total)
+    8. Navigate to checkout page
+    9. Fill or skip address details based on visibility (smart handling)
+    10. Complete full checkout by clicking through all steps:
+        - Agree to terms and conditions
+        - Click "Continue" buttons for each checkout step
+        - Confirm order
+    11. Verify order placed successfully (URL contains "checkout/success")
+    12. Navigate to Order History page
+    13. Verify order exists in history
+    14. View most recent order details
+    15. Verify order items are displayed correctly (12 items)
+    16. Initiate return for one product item
+    17. Navigate to Returns page
+    18. Verify return is displayed on Returns page
+    19. Verify return status is "Awaiting Products"
+    20. Post-condition: Clear shopping cart after test
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Product 1: iPod Touch (product_id=87, path=57)
+    - Product 2: iPod Shuffle (product_id=84, path=57)
+    - Expected cart items: 5 items (varies based on product quantities)
+    - Expected order items: 12 items (after full checkout)
+    - Expected return status: "Awaiting Products"
+    - Checkout address (if needed):
+      * Firstname: "Test"
+      * Lastname: "User"
+      * Address: "123 Test Street"
+      * City: "Test City"
+      * Postcode: "12345"
+      * Country: United States (ID: 223)
+      * Region: California (ID: 3613)
+
+Expected Results:
+    - Login is successful
+    - 2 products added to cart successfully (iPod Touch + iPod Shuffle)
+    - Cart displays 5 items total
+    - Address is either filled or recognized as already saved
+    - Full checkout automation completes successfully
+    - Order is placed (URL contains "checkout/success")
+    - Order History shows recent order
+    - Order details display 12 items
+    - Return is initiated for one product
+    - Returns page is accessible
+    - Return is visible on Returns page
+    - Return status displays "Awaiting Products"
+    - Cart is cleared after test completion
+    - Console displays: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    - Console displays: "📝 STEP 1: User Login"
+    - Console displays: "🛒 STEP 2: Select 2 In-Stock Products"
+    - Console displays: "💳 STEP 3: Complete Full Checkout"
+    - Console displays: "👀 STEP 4: View Order Details"
+    - Console displays: "🔄 STEP 5: Return One Item"
+    - Console displays: "✅ STEP 6: Verify on Returns Page"
+    - Console displays: "🎉 TEST COMPLETED SUCCESSFULLY!"
+
+Priority: High
+Test Type: UI, End-to-End, Functional, Order Management, Returns
+Dependencies: TestFactory, LoginPage, MyAccountPage, CartPage, OrderDetailsPage, ReturnsPage
+
+Notes:
+    - Test includes cart clearing in both beforeEach and afterEach hooks
+    - Smart address handling: fills if visible, skips if already saved
+    - Checkout automation handles multiple steps and button clicks
+    - Test has extended timeout (180000ms / 3 minutes) for full checkout
+    - Works with both first-time and subsequent test runs
+    - Robust checkout loop with up to 15 attempts to handle platform variations
+
+
+================================================================================
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 32
+Total Test Cases: 33
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 5 (2 Home Page + 3 Shop by Category)
 - UI Interaction Tests: 2 (1 Main Menu + 1 Home Page Review)
@@ -1472,9 +1573,10 @@ Total Test Cases: 32
 - Password Change Tests: 1
 - Account Information Update Tests: 1
 - Affiliate Tracking Tests: 1
+- Returns Management Tests: 1
 
 Priority Distribution:
-- High Priority: 23 tests
+- High Priority: 24 tests
 - Medium Priority: 9 tests
 
 Test Types:
@@ -1511,9 +1613,10 @@ Test Execution Commands:
     npx playwright test tests/CartPersistence* # Run only cart persistence tests
     npx playwright test tests/AccountInformationUpdate* # Run only account update tests
     npx playwright test tests/AffiliateTracking* # Run only affiliate tracking tests
+    npx playwright test tests/Returns* # Run only returns management tests
 
 Expected Overall Results:
-    32 passed tests in approximately 60-90 seconds
+    33 passed tests in approximately 60-120 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -1534,6 +1637,7 @@ Expected Overall Results:
     - Password change verification with old/new password validation
     - Account information update with name and address changes, verified after re-login
     - Affiliate tracking code application and product display verification
+    - Returns management full E2E flow with product selection, checkout, and return verification
 
 ================================================================================
                                     NOTES
@@ -1566,12 +1670,14 @@ Expected Overall Results:
    - ComparePage: Handles product comparison page interactions
    - ChangePasswordPage: Handles password change form and validation
    - WishlistPage: Handles wishlist page interactions and product management
-   - CartPage: Handles shopping cart interactions and product management
+   - CartPage: Handles shopping cart interactions, product management, and cart clearing
    - BlogPage: Handles blog posts filtering and author verification
    - ProductFilterPage: Handles product filtering by category, price, and brand
    - EditAccountPage: Handles account information updates (name, email, telephone)
    - EditAddressPage: Handles address book management and address updates
    - AffiliateTrackingPage: Handles affiliate tracking code retrieval and product URL tracking
+   - OrderDetailsPage: Handles order history viewing and return initiation
+   - ReturnsPage: Handles returns page interactions and status verification
 
 6. Future Enhancements:
    - Additional page objects can extend BasePage
