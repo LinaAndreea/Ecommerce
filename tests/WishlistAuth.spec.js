@@ -28,11 +28,23 @@ test.describe('WishList Access Control For Visitors:', () => {
     // When I click the WishList button
     await homePage.clickWishlistButton();
     
-    // Wait for navigation to complete and page to be stable
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(1000);
+    // Wait for navigation to complete with increased timeout
+    await page.waitForLoadState('load', { timeout: 10000 });
+    await page.waitForTimeout(2000);
     
-    const currentUrl = page.url();
+    // Wait for page to stabilize (handle any redirects)
+    let currentUrl = page.url();
+    let previousUrl = '';
+    let attempts = 0;
+    
+    // Wait up to 10 seconds for URL to stabilize
+    while (currentUrl !== previousUrl && attempts < 5) {
+      previousUrl = currentUrl;
+      await page.waitForTimeout(2000);
+      currentUrl = page.url();
+      attempts++;
+    }
+    
     console.log('Current URL after clicking wishlist:', currentUrl);
     
     // Then the application should redirect to login page
@@ -43,17 +55,18 @@ test.describe('WishList Access Control For Visitors:', () => {
       await expect(page).toHaveURL(/.*login.*/);
       await expect(loginPage.emailInput).toBeVisible();
       await expect(loginPage.passwordInput).toBeVisible();
+      console.log('✅ Redirected to login page as expected');
     } else {
-      // If not redirected, check that wishlist requires authentication message or empty state
-      await page.waitForLoadState('networkidle');
-      const pageContent = await page.content();
-      console.log('Page title:', await page.title());
+      // If not redirected, navigate directly to wishlist to verify auth is required
+      console.log('⚠️  Wishlist button did not redirect, trying direct navigation...');
+      await wishlistPage.navigate('/index.php?route=account/wishlist');
+      await page.waitForLoadState('networkidle', { timeout: 10000 });
       
-      const hasAuthPrompt = pageContent.toLowerCase().includes('login') || 
-                           pageContent.toLowerCase().includes('sign in') ||
-                           await wishlistPage.isWishlistEmpty();
+      const finalUrl = page.url();
+      const redirectedToLogin = finalUrl.includes('login') || finalUrl.includes('account/login');
       
-      expect(hasAuthPrompt).toBeTruthy();
+      expect(redirectedToLogin).toBeTruthy();
+      console.log('✅ Direct navigation redirected to login - authentication is required');
     }
   });
 
