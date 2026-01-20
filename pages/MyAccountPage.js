@@ -53,7 +53,15 @@ class MyAccountPage extends BasePage {
         // Click logout from dropdown
         await this.logoutLink.waitFor({ state: 'visible', timeout: 5000 });
         await this.logoutLink.click();
-        await this.page.waitForLoadState('networkidle');
+        
+        // Wait for logout to complete - use shorter timeout and fallback
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        } catch (error) {
+            // Fallback: wait for load state if networkidle times out
+            await this.page.waitForLoadState('load', { timeout: 5000 });
+            await this.page.waitForTimeout(1000);
+        }
         return this;
     }
 
@@ -63,7 +71,15 @@ class MyAccountPage extends BasePage {
      */
     async logoutFromSidebar() {
         await this.sidebarLogout.click();
-        await this.page.waitForLoadState('networkidle');
+        
+        // Wait for logout to complete - use shorter timeout and fallback
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        } catch (error) {
+            // Fallback: wait for load state if networkidle times out
+            await this.page.waitForLoadState('load', { timeout: 5000 });
+            await this.page.waitForTimeout(1000);
+        }
         return this;
     }
 

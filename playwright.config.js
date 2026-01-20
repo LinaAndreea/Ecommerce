@@ -94,7 +94,7 @@ module.exports = defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 4,
+  workers: process.env.CI ? 1 : 1, // Using 1 worker to prevent cart state interference between tests sharing same user
   timeout: 60000, // 60 seconds per test
   expect: {
     timeout: 10000 // 10 seconds for assertions

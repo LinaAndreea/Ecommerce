@@ -21,8 +21,8 @@ class CartPage extends BasePage {
         // Empty cart message
         this.emptyCartMessage = page.locator('p').filter({ hasText: /shopping cart is empty|no products in your cart/i }).first();
         
-        // Cart actions
-        this.updateButton = page.locator('button[type="submit"]:has-text("Update"), button:has-text("Update")').first();
+        // Cart actions - Update button has icon, not text!
+        this.updateButton = page.locator('button[type="submit"][data-original-title="Update"], button[data-original-title="Update"], button.btn-primary:has(i.fa-sync-alt)').first();
         this.continueShoppingButton = page.locator('a:has-text("Continue Shopping")').first();
         this.checkoutButton = page.locator('a:has-text("Checkout")').first();
         
@@ -244,6 +244,319 @@ class CartPage extends BasePage {
         }
         
         return this;
+    }
+
+    /**
+     * Gets locator for a specific product row by name
+     * @param {string} productName - Product name to search for
+     * @returns {Locator}
+     */
+    getProductRow(productName) {
+        return this.page.locator('tr').filter({ 
+            has: this.page.locator(`a:text-is("${productName}"), a:has-text("${productName}")`)
+        }).first();
+    }
+
+    /**
+     * Gets the quantity input for a specific product
+     * @param {string} productName - Product name
+     * @returns {Locator}
+     */
+    getProductQuantityInput(productName) {
+        const row = this.getProductRow(productName);
+        return row.locator('input[name^="quantity"]').first();
+    }
+
+    /**
+     * Updates quantity for a specific product
+     * @param {string} productName - Product name
+     * @param {number} quantity - New quantity
+     * @returns {Promise<CartPage>}
+     */
+    async updateProductQuantity(productName, quantity) {
+        const quantityInput = this.getProductQuantityInput(productName);
+        
+        await this.waitForElement(quantityInput, 'visible', 5000);
+        await quantityInput.clear();
+        await quantityInput.fill(quantity.toString());
+        
+        console.log(`✅ Updated quantity for "${productName}" to ${quantity}`);
+        return this;
+    }
+
+    /**
+     * Updates quantities for multiple products
+     * @param {Array<{productName: string, quantity: number}>} products - Array of products with quantities
+     * @returns {Promise<CartPage>}
+     */
+    async updateMultipleProductQuantities(products) {
+        for (const product of products) {
+            await this.updateProductQuantity(product.productName, product.quantity);
+        }
+        return this;
+    }
+
+    /**
+     * Gets the unit price for a specific product
+     * @param {string} productName - Product name
+     * @returns {Promise<number>}
+     */
+    async getProductUnitPrice(productName) {
+        const row = this.getProductRow(productName);
+        
+        try {
+            // Look for unit price column (typically 3rd or 4th column)
+            const priceCell = row.locator('td').nth(2);
+            const priceText = await priceCell.textContent();
+            
+            // Extract numeric value from price (remove currency symbols, commas, etc.)
+            const price = this.extractPrice(priceText);
+            return price;
+        } catch (error) {
+            console.log(`Could not get unit price for "${productName}":`, error.message);
+            return 0;
+        }
+    }
+
+    /**
+     * Gets the total price for a specific product (unit price * quantity)
+     * @param {string} productName - Product name
+     * @returns {Promise<number>}
+     */
+    async getProductTotalPrice(productName) {
+        const row = this.getProductRow(productName);
+        
+        try {
+            // Look for total column (typically last column before remove button)
+            const totalCell = row.locator('td').last();
+            const totalText = await totalCell.textContent();
+            
+            // Extract numeric value from total
+            const total = this.extractPrice(totalText);
+            return total;
+        } catch (error) {
+            console.log(`Could not get total price for "${productName}":`, error.message);
+            return 0;
+        }
+    }
+
+    /**
+     * Gets the cart subtotal
+     * @returns {Promise<number>}
+     */
+    async getSubtotal() {
+        try {
+            const subtotalRow = this.page.locator('tr').filter({ 
+                has: this.page.locator('td, th').filter({ hasText: /sub-total|subtotal/i })
+            }).first();
+            
+            const priceCell = subtotalRow.locator('td').last();
+            const priceText = await priceCell.textContent();
+            
+            return this.extractPrice(priceText);
+        } catch (error) {
+            console.log('Could not get subtotal:', error.message);
+            return 0;
+        }
+    }
+
+    /**
+     * Gets the cart total (grand total)
+     * @returns {Promise<number>}
+     */
+    async getTotal() {
+        try {
+            const totalRow = this.page.locator('tr').filter({ 
+                has: this.page.locator('td, th').filter({ hasText: /^total$/i })
+            }).last();
+            
+            const priceCell = totalRow.locator('td').last();
+            const priceText = await priceCell.textContent();
+            
+            return this.extractPrice(priceText);
+        } catch (error) {
+            console.log('Could not get total:', error.message);
+            return 0;
+        }
+    }
+
+    /**
+     * Extracts numeric price from text
+     * @param {string} priceText - Text containing price
+     * @returns {number} Numeric price value
+     */
+    extractPrice(priceText) {
+        if (!priceText) return 0;
+        
+        // Remove currency symbols, spaces, and extract number
+        // Handles formats like: $123.45, $1,234.56, €123,45
+        const cleaned = priceText
+            .replace(/[^\d.,\-]/g, '') // Remove non-numeric except decimal separators
+            .replace(/,/g, ''); // Remove thousand separators
+        
+        const price = parseFloat(cleaned);
+        return isNaN(price) ? 0 : price;
+    }
+
+    /**
+     * Calculates expected total for multiple products
+     * @param {Array<{productName: string, quantity: number, unitPrice: number}>} products - Products with quantities and prices
+     * @returns {number} Expected total
+     */
+    calculateExpectedTotal(products) {
+        let total = 0;
+        for (const product of products) {
+            total += product.quantity * product.unitPrice;
+        }
+        return total;
+    }
+
+    /**
+     * Gets all cart item details
+     * @returns {Promise<Array<{name: string, unitPrice: number, quantity: number, total: number}>>}
+     */
+    async getAllCartItemDetails() {
+        const items = [];
+        
+        try {
+            // Wait for cart table to be present
+            await this.page.waitForTimeout(1000);
+            
+            // Try multiple selectors for cart rows
+            const cartRowSelectors = [
+                '.table-responsive tbody tr',
+                '#content table tbody tr',
+                'table tbody tr',
+                '#shopping-cart tbody tr',
+                '[id*="cart"] tbody tr'
+            ];
+            
+            let cartRows = null;
+            for (const selector of cartRowSelectors) {
+                const locator = this.page.locator(selector);
+                const count = await locator.count();
+                if (count > 0) {
+                    cartRows = locator;
+                    console.log(`✅ Found ${count} cart rows using selector: ${selector}`);
+                    break;
+                }
+            }
+            
+            if (!cartRows) {
+                console.log('⚠️ No cart rows found with any selector');
+                return items;
+            }
+            
+            const count = await cartRows.count();
+            
+            for (let i = 0; i < count; i++) {
+                const row = cartRows.nth(i);
+                
+                // Try multiple selectors for product name - be more flexible
+                const nameSelectors = [
+                    'td a[href*="product"]',
+                    'td.text-left a',
+                    'td a:not([onclick*="remove"])',  // Exclude remove buttons
+                    '.product-name a',
+                    'td:nth-child(2) a'  // Usually the second column has the name
+                ];
+                
+                let name = null;
+                for (const selector of nameSelectors) {
+                    try {
+                        const nameLink = row.locator(selector).first();
+                        const linkCount = await nameLink.count();
+                        if (linkCount > 0) {
+                            const textContent = await nameLink.textContent();
+                            if (textContent && textContent.trim()) {
+                                name = textContent;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        // Continue to next selector
+                    }
+                }
+                
+                if (!name || !name.trim()) {
+                    console.log(`⚠️ Could not find name for row ${i}, trying text content...`);
+                    // Fallback: try to get any text from the row
+                    try {
+                        const allText = await row.textContent();
+                        console.log(`  Row ${i} text: ${allText}`);
+                    } catch (e) {
+                        // Ignore
+                    }
+                    continue;
+                }
+                
+                // Get quantity
+                const quantityInput = row.locator('input[name^="quantity"]').first();
+                const quantityCount = await quantityInput.count();
+                let quantity = 1;
+                
+                if (quantityCount > 0) {
+                    const quantityValue = await quantityInput.inputValue();
+                    quantity = parseInt(quantityValue) || 1;
+                }
+                
+                // Get unit price - try multiple columns
+                let unitPrice = 0;
+                const cells = row.locator('td');
+                const cellCount = await cells.count();
+                
+                // Usually: Image | Name | Model | Quantity | Unit Price | Total | Remove
+                // Try to find price in 4th or 5th column (index 3 or 4)
+                if (cellCount >= 5) {
+                    const unitPriceCell = cells.nth(4);
+                    const unitPriceText = await unitPriceCell.textContent();
+                    unitPrice = this.extractPrice(unitPriceText);
+                    
+                    // If that doesn't work, try column 3
+                    if (unitPrice === 0 && cellCount >= 4) {
+                        const altPriceCell = cells.nth(3);
+                        const altPriceText = await altPriceCell.textContent();
+                        unitPrice = this.extractPrice(altPriceText);
+                    }
+                }
+                
+                // Get total price - try multiple columns to find it
+                let total = 0;
+                if (cellCount >= 6) {
+                    // Try column 5 (common for Total column)
+                    let totalCell = cells.nth(5);
+                    let totalText = await totalCell.textContent();
+                    total = this.extractPrice(totalText);
+                    
+                    // If that's 0 or same as unit price, try second to last column
+                    if (total === 0 || total === unitPrice) {
+                        totalCell = cells.nth(cellCount - 2);
+                        totalText = await totalCell.textContent();
+                        total = this.extractPrice(totalText);
+                    }
+                    
+                    // If still wrong, try last column
+                    if (total === 0 || total === unitPrice) {
+                        totalCell = cells.nth(cellCount - 1);
+                        totalText = await totalCell.textContent();
+                        total = this.extractPrice(totalText);
+                    }
+                }
+                
+                items.push({
+                    name: name.trim(),
+                    unitPrice,
+                    quantity,
+                    total
+                });
+                
+                console.log(`  → Item ${i + 1}: ${name.trim()} | Qty: ${quantity} | Unit: $${unitPrice.toFixed(2)} | Total: $${total.toFixed(2)}`);
+            }
+        } catch (error) {
+            console.log('Error getting cart item details:', error.message);
+        }
+        
+        return items;
     }
 }
 

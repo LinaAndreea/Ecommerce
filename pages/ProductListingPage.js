@@ -34,7 +34,12 @@ class ProductListingPage extends BasePage {
      */
     async navigateToCategory(categoryPath = '/index.php?route=product/category&path=18') {
         await this.navigate(categoryPath);
-        await this.page.waitForLoadState('networkidle');
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        } catch (error) {
+            await this.page.waitForLoadState('load', { timeout: 5000 });
+            await this.page.waitForTimeout(1000);
+        }
         await this.waitForProductsToLoad();
         return this;
     }
@@ -137,8 +142,12 @@ class ProductListingPage extends BasePage {
             }
         }
         
-        // Wait for the AJAX response to complete
-        await this.page.waitForLoadState('networkidle');
+        // Wait for the AJAX response to complete - use shorter timeout and fallback
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 5000 });
+        } catch (error) {
+            await this.page.waitForTimeout(1000);
+        }
         await this.page.waitForTimeout(500);
         return this;
     }
@@ -168,7 +177,12 @@ class ProductListingPage extends BasePage {
         await this.successAlert.waitFor({ state: 'visible', timeout: 5000 });
         const link = this.successAlert.locator('a[href*="product/compare"]');
         await link.click();
-        await this.page.waitForLoadState('networkidle');
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        } catch (error) {
+            await this.page.waitForLoadState('load', { timeout: 5000 });
+            await this.page.waitForTimeout(1000);
+        }
         return this;
     }
 
@@ -178,7 +192,12 @@ class ProductListingPage extends BasePage {
      */
     async navigateToComparePage() {
         await this.compareTotal.click();
-        await this.page.waitForLoadState('networkidle');
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        } catch (error) {
+            await this.page.waitForLoadState('load', { timeout: 5000 });
+            await this.page.waitForTimeout(1000);
+        }
         return this;
     }
 
@@ -235,8 +254,12 @@ class ProductListingPage extends BasePage {
             }
         }
         
-        // Wait for AJAX
-        await this.page.waitForLoadState('networkidle');
+        // Wait for AJAX - use shorter timeout and fallback
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 5000 });
+        } catch (error) {
+            await this.page.waitForTimeout(1000);
+        }
         await this.page.waitForTimeout(1000);
         return this;
     }
@@ -316,8 +339,13 @@ class ProductListingPage extends BasePage {
             console.log(`No success alert detected for product ${index}, continuing...`);
         }
         
-        // Wait for the AJAX response to complete
-        await this.page.waitForLoadState('networkidle');
+        // Wait for the AJAX response to complete - use shorter timeout and fallback
+        try {
+            await this.page.waitForLoadState('networkidle', { timeout: 5000 });
+        } catch (error) {
+            // Fallback: just wait a bit for the AJAX to complete
+            await this.page.waitForTimeout(1000);
+        }
         return this;
     }
 

@@ -11,7 +11,7 @@ const { TestFactory } = require('../.github/factories/TestFactory');
  * - DIP: Depends on abstractions (Page Objects) not concrete implementations
  * - OCP: Extensible through configuration and Page Object methods
  */
-test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
+test.describe.serial('Shopping Cart Persistence For Authenticated Users:', () => {
 
   let loginPage;
   let productListingPage;
@@ -36,6 +36,16 @@ test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
     addedProducts = [];
   });
 
+  test.afterEach(async ({ page }) => {
+    // Cleanup: Clear cart after test to avoid interfering with other tests
+    try {
+      await cartPage.clearCart();
+      console.log('🧹 Cart cleared after test');
+    } catch (error) {
+      console.log('⚠️ Could not clear cart in cleanup:', error.message);
+    }
+  });
+
   test('should persist cart items after user re-login', async ({ page }) => {
     // Given I have logged in to the AUT
     const savedCredentials = dataPersistenceService.loadUserCredentials();
@@ -52,21 +62,54 @@ test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
     
     console.log('✅ User logged in successfully:', savedCredentials.email);
     
+    // Clear cart first to ensure clean state (prevent test interference)
+    console.log('🧹 Clearing cart to ensure clean start...');
+    try {
+      await cartPage.navigateToCart();
+      await page.waitForLoadState('networkidle', { timeout: 10000 });
+      await cartPage.clearCart();
+      console.log('✅ Cart cleared - starting fresh');
+    } catch (error) {
+      console.log('ℹ️ Cart already empty or could not be cleared:', error.message);
+    }
+    
     // And I have added at least 2 items in the shopping cart
     console.log('🛒 Adding products to cart from listing page...');
     
     // Navigate to product listing page (Laptops category)
     await productListingPage.navigateToCategory('/index.php?route=product/category&path=18');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000); // Increased wait for page to fully load
     
     // Add first two products to cart
-    addedProducts = await productListingPage.addMultipleProductsToCart([0, 1]);
+    try {
+      addedProducts = await productListingPage.addMultipleProductsToCart([0, 1]);
+      console.log('✅ Added products:', addedProducts);
+      expect(addedProducts.length, 'Expected to add at least 2 products').toBeGreaterThanOrEqual(2);
+    } catch (error) {
+      console.log('❌ Failed to add products:', error.message);
+      // Take screenshot for debugging
+      await page.screenshot({ path: 'test-results/cart-persistence-add-failed.png', fullPage: true });
+      throw new Error(`Failed to add products to cart: ${error.message}`);
+    }
     
-    console.log('✅ Added products:', addedProducts);
+    // Wait for cart to update
+    await page.waitForTimeout(2000);
     
-    // Verify cart has 2 items before logout
+    // Verify cart has items before checking count
     await cartPage.navigateToCart();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+    
     const cartItemsBeforeLogout = await cartPage.getCartItemCount();
     console.log(`📊 Cart items before logout: ${cartItemsBeforeLogout}`);
+    console.log(`📦 Products that should be in cart: ${addedProducts.join(', ')}`);
+    
+    // If cart is empty, take a screenshot for debugging
+    if (cartItemsBeforeLogout === 0) {
+      await page.screenshot({ path: 'test-results/cart-persistence-empty-cart.png', fullPage: true });
+      console.log('📸 Screenshot saved: cart-persistence-empty-cart.png');
+    }
     
     expect(cartItemsBeforeLogout, 'Expected at least 2 items in cart before logout').toBeGreaterThanOrEqual(2);
     
@@ -86,9 +129,12 @@ test.describe('Shopping Cart Persistence For Authenticated Users:', () => {
     
     // Then the shopping cart should still have the items added in the cart
     await cartPage.navigateToCart();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
     
     const cartItemsAfterRelogin = await cartPage.getCartItemCount();
     console.log(`📊 Cart items after re-login: ${cartItemsAfterRelogin}`);
+    console.log(`📊 Expected to find products: ${addedProducts.join(', ')}`);
     
     expect(cartItemsAfterRelogin, 'Expected cart to still have at least 2 items after re-login').toBeGreaterThanOrEqual(2);
     
