@@ -1301,6 +1301,123 @@ Dependencies: TestFactory, LoginPage, ProductListingPage, WishlistPage, MyAccoun
 
 
 ================================================================================
+                       CART QUANTITY UPDATE TESTS
+================================================================================
+
+TEST CASE ID: CART_QTY_001
+Test Name: Correctly Update Payment Sum When Quantities Are Changed to 30 for Both Items
+Test File: tests/CartQuantityUpdate.spec.js
+Test Method: should correctly update payment sum when quantities are changed to 30 for both items
+
+Description:
+    Verify that when a logged-in user adds multiple products with different variants
+    to their shopping cart, updates the quantities to 30 for each item, and refreshes
+    the cart, the application correctly recalculates and displays the updated payment
+    sum with accurate line item totals and grand total.
+
+Preconditions:
+    - E-commerce application is accessible
+    - Test user credentials exist in test-user.json
+    - User can successfully log in
+    - Special Offers page is accessible
+    - Apple Cinema 30" product is available with Small and Large size options
+    - Product has minimum order quantity of 2 per variant
+    - Shopping cart functionality is enabled
+    - Cart can be cleared before and after test
+
+Test Steps:
+    1. Pre-condition: Clear any existing cart items to ensure clean state
+    2. Load test user credentials from test-user.json
+    3. Navigate to login page and login with test credentials
+    4. Verify login was successful
+    5. Navigate to Special Offers page
+    6. Navigate to Apple Cinema 30" product page (product_id=90)
+    7. Select Small size from dropdown
+    8. Set quantity to 2 (minimum required for this product)
+    9. Click Add to Cart button (with force click handling)
+    10. Navigate back to Apple Cinema 30" product page
+    11. Select Large size from dropdown
+    12. Set quantity to 2 (minimum required for this product)
+    13. Click Add to Cart button (with force click handling)
+    14. Navigate to shopping cart
+    15. Verify cart contains items (not empty)
+    16. Get initial cart item details (names, unit prices, quantities, totals)
+    17. Update all quantity inputs to 30
+    18. Take screenshot BEFORE Update button click
+    19. Click Update button to refresh cart
+    20. Wait for cart to refresh (networkidle)
+    21. Take screenshot AFTER Update button with quantities = 30
+    22. Verify quantity inputs show 30
+    23. Get updated cart item details
+    24. Calculate expected totals for each line item (unit price × 30)
+    25. Verify each line item total matches calculated total
+    26. Verify cart grand total includes all line items plus taxes/fees
+    27. Verify at least 2 Apple Cinema items exist in cart
+    28. Verify each Apple Cinema item has quantity = 30
+    29. Post-condition: Clear shopping cart after test
+
+Test Data:
+    - Login credentials: From test-user.json
+    - Product: Apple Cinema 30" (product_id=90)
+    - Product variants:
+      * Small size (minimum quantity: 2, updated to: 30)
+      * Large size (minimum quantity: 2, updated to: 30)
+    - Expected calculations:
+      * Apple Cinema Small: 30 × unit price (e.g., $101.60) = $3,048.00
+      * Apple Cinema Large: 30 × unit price (e.g., $99.20) = $2,976.00
+      * Line items subtotal: $6,024.00 (before taxes)
+      * Grand total: Subtotal + applicable taxes and fees
+
+Expected Results:
+    - Login is successful
+    - Cart cleared successfully to start with clean state
+    - Special Offers page loads successfully
+    - Apple Cinema 30" product page loads successfully
+    - Small size variant added to cart (quantity: 2)
+    - Large size variant added to cart (quantity: 2)
+    - Cart contains at least 2 items
+    - Initial cart details retrieved successfully
+    - Quantities updated to 30 in all input fields
+    - Screenshot captured BEFORE Update: before-update-button.png
+    - Update button clicked successfully
+    - Cart refreshes with updated quantities
+    - Screenshot captured AFTER Update: cart-with-30-items.png
+    - All quantity inputs show value "30"
+    - Each line item total = unit price × 30 (within $0.10 tolerance)
+    - Cart grand total includes all line items plus taxes
+    - At least 2 Apple Cinema items verified in cart
+    - Each Apple Cinema item quantity = 30
+    - Cart cleared in cleanup
+    - Console displays step-by-step verification:
+      * "📝 STEP 1: User Login"
+      * "🎯 STEP 2: Navigate to Special Offers Page"
+      * "🔗 STEP 3: Click Sale Ad"
+      * "🛒 STEP 4: Add Apple Cinema 30" (Small & Large) to Cart"
+      * "🛒 STEP 5: Open Shopping Cart"
+      * "🔢 STEP 6: Update Quantities to 30"
+      * "🔄 STEP 7: Click Update Button to Refresh Cart"
+      * "💵 STEP 8: Verify Payment Sum (MATH TIME!)"
+      * "✅ TEST PASSED: Payment sum calculations verified!"
+
+Priority: High
+Test Type: UI, End-to-End, Functional, Cart Management, Calculation Verification
+Dependencies: TestFactory, LoginPage, SpecialOffersPage, CartPage, DataPersistenceService
+
+Notes:
+    - Test uses serial execution to prevent cart state conflicts
+    - Cart cleared in both beforeEach and afterEach hooks
+    - Uses JavaScript evaluation for size selection reliability
+    - Force click used for Add to Cart button (may be hidden)
+    - Multiple selectors attempted for Update button (icon-based button)
+    - Screenshots captured for debugging and verification
+    - Extended timeout (120000ms / 2 minutes) for full test execution
+    - Floating point tolerance of $0.10 for line item calculations
+    - Handles both visible and hidden button states
+    - Smart cart empty detection with helpful error messages
+    - HTML structure validation for cart items
+
+
+================================================================================
                     ACCOUNT INFORMATION UPDATE TESTS
 ================================================================================
 
@@ -1557,7 +1674,7 @@ Notes:
                                 TEST EXECUTION SUMMARY
 ================================================================================
 
-Total Test Cases: 33
+Total Test Cases: 34
 - API Tests: 6 (2 Registration + 4 Login)
 - UI Navigation Tests: 5 (2 Home Page + 3 Shop by Category)
 - UI Interaction Tests: 2 (1 Main Menu + 1 Home Page Review)
@@ -1568,6 +1685,7 @@ Total Test Cases: 33
 - Product Filter Tests: 3
 - Blog Posts Filtering Tests: 1
 - Cart Persistence Tests: 1
+- Cart Quantity Update Tests: 1
 - Wishlist Access Control Tests: 2
 - Wishlist Persistence Tests: 1
 - Password Change Tests: 1
@@ -1576,7 +1694,7 @@ Total Test Cases: 33
 - Returns Management Tests: 1
 
 Priority Distribution:
-- High Priority: 24 tests
+- High Priority: 25 tests
 - Medium Priority: 9 tests
 
 Test Types:
@@ -1611,12 +1729,13 @@ Test Execution Commands:
     npx playwright test tests/ProductFilter* # Run only product filter tests
     npx playwright test tests/BlogPosts*    # Run only blog posts tests
     npx playwright test tests/CartPersistence* # Run only cart persistence tests
+    npx playwright test tests/CartQuantityUpdate* # Run only cart quantity update tests
     npx playwright test tests/AccountInformationUpdate* # Run only account update tests
     npx playwright test tests/AffiliateTracking* # Run only affiliate tracking tests
     npx playwright test tests/Returns* # Run only returns management tests
 
 Expected Overall Results:
-    33 passed tests in approximately 60-120 seconds
+    34 passed tests in approximately 60-120 seconds
     All tests should pass without errors
     Console output should show:
     - Successful registrations for API registration tests
@@ -1632,6 +1751,7 @@ Expected Overall Results:
     - Product filter verification with category, price, and brand filters
     - Blog posts filtering by author verification
     - Cart persistence verification after re-login
+    - Cart quantity update verification with payment sum calculations for 30 items
     - Wishlist access control verification for visitors
     - Wishlist persistence verification after re-login
     - Password change verification with old/new password validation
@@ -1670,7 +1790,8 @@ Expected Overall Results:
    - ComparePage: Handles product comparison page interactions
    - ChangePasswordPage: Handles password change form and validation
    - WishlistPage: Handles wishlist page interactions and product management
-   - CartPage: Handles shopping cart interactions, product management, and cart clearing
+   - CartPage: Handles shopping cart interactions, product management, cart clearing, and quantity updates
+   - SpecialOffersPage: Handles navigation to special offers and sale pages
    - BlogPage: Handles blog posts filtering and author verification
    - ProductFilterPage: Handles product filtering by category, price, and brand
    - EditAccountPage: Handles account information updates (name, email, telephone)
