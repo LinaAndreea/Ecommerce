@@ -32,10 +32,11 @@ This test suite has been refactored to follow SOLID principles for better mainta
 │   ├── RegistrationPage.js          # User registration interactions
 │   ├── SearchResultsPage.js         # Search functionality
 │   ├── ShopByCategoryPage.js        # Category page interactions
+│   ├── SpecialOffersPage.js         # Special offers & sale page navigation
 │   ├── ProductListingPage.js        # Product browsing & compare
 │   ├── ComparePage.js               # Compare products functionality
 │   ├── ChangePasswordPage.js        # Password change functionality
-│   ├── CartPage.js                  # Shopping cart interactions & cart clearing
+│   ├── CartPage.js                  # Shopping cart interactions, cart clearing & quantity updates
 │   ├── CheckoutPage.js              # Checkout process handling
 │   ├── OrderDetailsPage.js          # Order viewing & return initiation
 │   ├── ReturnsPage.js               # Returns page verification
@@ -50,6 +51,7 @@ This test suite has been refactored to follow SOLID principles for better mainta
     ├── ApiRegister.spec.js          # API registration tests
     ├── BlogPosts.spec.js            # Blog posts filtering tests
     ├── CartPersistence.spec.js      # Cart persistence after re-login
+    ├── CartQuantityUpdate.spec.js   # Cart quantity update & payment sum verification
     ├── CompareProducts.spec.js      # Compare products tests
     ├── DuplicateEmailRegistration.spec.js  # Duplicate email validation
     ├── HomePage.spec.js             # Homepage UI tests
@@ -81,13 +83,14 @@ This test suite has been refactored to follow SOLID principles for better mainta
 - **RegistrationPage**: User registration form interactions
 - **MainMenuPage**: Main menu hover and navigation interactions
 - **ShopByCategoryPage**: Category page specific interactions
+- **SpecialOffersPage**: Special offers and sale page navigation
 - **SearchResultsPage**: Product search and results handling
 - **ProductListingPage**: Product browsing and compare functionality
 - **ComparePage**: Product comparison page interactions
 - **WishlistPage**: Wishlist specific interactions
 - **ProductFilterPage**: Product filtering interactions
 - **ChangePasswordPage**: Password change form and validation
-- **CartPage**: Shopping cart management and persistence
+- **CartPage**: Shopping cart management, persistence, and quantity updates
 - **BlogPage**: Blog posts filtering and author verification
 - **EditAccountPage**: Account information editing (name, email, telephone)
 - **EditAddressPage**: Address book management with create/edit functionality
@@ -172,7 +175,7 @@ test.beforeEach(async ({ page }) => {
 
 ### Test Coverage
 
-The test suite includes **33 automated tests**:
+The test suite includes **34 automated tests**:
 - **API Tests (6)**: User registration and login functionality
 - **Navigation Tests (5)**: Home page and category page navigation
 - **Search Tests (4)**: Product search functionality and result validation
@@ -184,6 +187,7 @@ The test suite includes **33 automated tests**:
 - **Wishlist Tests (3)**: Access control for visitors and persistence after re-login
 - **Password Change Tests (1)**: Password update with old/new password validation
 - **Cart Persistence Tests (1)**: Shopping cart persistence after re-login
+- **Cart Quantity Update Tests (1)**: Cart quantity updates with payment sum verification for multiple items
 - **Blog Filtering Tests (1)**: Blog posts filtering by author
 - **Account Information Update Tests (1)**: Account and address updates with persistence verification
 - **Affiliate Tracking Tests (1)**: Tracking code application and product display with tracking
